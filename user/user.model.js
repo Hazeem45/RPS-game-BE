@@ -35,6 +35,7 @@ class UserModel {
           },
         ],
       },
+      attributes: ["id", "username"],
       raw: true,
     });
   };
@@ -42,6 +43,53 @@ class UserModel {
   getPassword = (password) => {
     return database.User.findOne({
       where: {password},
+    });
+  };
+
+  getUserById = (id) => {
+    return database.User.findOne({
+      where: {id},
+      attributes: {
+        exclude: ["password", "updatedAt"],
+      },
+    });
+  };
+
+  getUserBiodata = (id) => {
+    return database.User_Biodata.findOne({
+      where: {userId: id},
+      include: [
+        {
+          model: database.User,
+          attributes: ["id", "username"],
+        },
+      ],
+    });
+  };
+
+  updateBiodata = (userData, id) => {
+    database.User_Biodata.update(
+      {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        infoBio: userData.infoBio,
+        address: userData.address,
+        gender: userData.gender,
+      },
+      {
+        where: {userId: id},
+      }
+    );
+  };
+
+  createBiodata = (userData, id) => {
+    database.User_Biodata.create({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      infoBio: userData.infoBio,
+      address: userData.address,
+      gender: userData.gender,
+      userId: id,
     });
   };
 }
