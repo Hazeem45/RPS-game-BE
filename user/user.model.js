@@ -31,7 +31,7 @@ class UserModel {
             email,
           },
           {
-            password,
+            password: md5(password),
           },
         ],
       },
@@ -42,7 +42,9 @@ class UserModel {
 
   getPassword = (password) => {
     return database.User.findOne({
-      where: {password},
+      where: {
+        password: md5(password),
+      },
     });
   };
 
