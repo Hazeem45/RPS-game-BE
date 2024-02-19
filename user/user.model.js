@@ -5,20 +5,24 @@ const {Op} = require("sequelize");
 class UserModel {
   getExistingUsername = (username) => {
     return database.User.findOne({
-      where: {username},
+      where: {username: username.toLowerCase()},
+      attributes: ["username"],
+      raw: true,
     });
   };
 
   getExistingEmail = (email) => {
     return database.User.findOne({
-      where: {email},
+      where: {email: email.toLowerCase()},
+      attributes: ["email"],
+      raw: true,
     });
   };
 
   registerNewUser = (username, email, password) => {
     database.User.create({
-      username,
-      email,
+      username: username.toLowerCase(),
+      email: email.toLowerCase(),
       password: md5(password),
     });
   };
@@ -28,7 +32,7 @@ class UserModel {
       where: {
         [Op.and]: [
           {
-            email,
+            email: email,
           },
           {
             password: md5(password),
@@ -37,14 +41,6 @@ class UserModel {
       },
       attributes: ["id", "username"],
       raw: true,
-    });
-  };
-
-  getPassword = (password) => {
-    return database.User.findOne({
-      where: {
-        password: md5(password),
-      },
     });
   };
 
@@ -60,18 +56,22 @@ class UserModel {
   getUserBiodata = (id) => {
     return database.User_Biodata.findOne({
       where: {userId: id},
+      attributes: {
+        exclude: ["id", "createdAt", "updatedAt"],
+      },
       include: [
         {
           model: database.User,
-          attributes: ["id", "username"],
+          attributes: ["username", "createdAt"],
         },
       ],
     });
   };
 
-  updateBiodata = (userData, id) => {
+  updateBiodata = (id, userData) => {
     database.User_Biodata.update(
       {
+        birthDate: userData.birthDate,
         firstName: userData.firstName,
         lastName: userData.lastName,
         infoBio: userData.infoBio,
@@ -84,8 +84,9 @@ class UserModel {
     );
   };
 
-  createBiodata = (userData, id) => {
+  createBiodata = (id, userData) => {
     database.User_Biodata.create({
+      birthDate: userData.birthDate,
       firstName: userData.firstName,
       lastName: userData.lastName,
       infoBio: userData.infoBio,

@@ -1,3 +1,4 @@
+const formatDate = require("../utils/formatDate");
 const userModel = require("./user.model");
 const jwt = require("jsonwebtoken");
 
@@ -10,17 +11,17 @@ class UserController {
       const existedEmail = await userModel.getExistingEmail(email);
       if (existedUsername) {
         res.statusCode = 409;
-        res.json({message: `${username} username has been used, try another!`});
+        return res.json({message: `${username} is already used, try another!`});
       } else if (existedEmail) {
         res.statusCode = 409;
-        res.json({message: `${email} has been used in another account`});
+        return res.json({message: `${email} is alredy used on another account`});
       } else {
         userModel.registerNewUser(username, email, password);
         res.statusCode = 201;
-        res.json({message: `registration successful`});
+        return res.json({message: `registration successful`});
       }
     } catch (error) {
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -34,17 +35,16 @@ class UserController {
         return res.json({accessToken: token});
       } else if (!registeredUser) {
         const registeredEmail = await userModel.getExistingEmail(email);
-        const registeredPassword = await userModel.getPassword(password);
+        console.log(registeredEmail);
         if (!registeredEmail) {
           res.statusCode = 404;
-          res.json({message: `User with the provided email not found`});
-        } else if (!registeredPassword) {
-          res.statusCode = 401;
-          res.json({message: "password is incorrect!"});
+          return res.json({message: `user with email: ${email} not found`});
         }
+        res.statusCode = 401;
+        return res.json({message: "password is incorrect!"});
       }
     } catch (error) {
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -52,9 +52,15 @@ class UserController {
     const {id} = req.token;
     try {
       const userDetail = await userModel.getUserById(id);
-      res.json(userDetail);
+      const manipulatedData = {
+        id: userDetail.id,
+        username: userDetail.username,
+        email: userDetail.email,
+        joinAt: formatDate(userDetail.createdAt),
+      };
+      return res.json(manipulatedData);
     } catch (error) {
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -62,9 +68,19 @@ class UserController {
     const {id} = req.token;
     try {
       const userBiodata = await userModel.getUserBiodata(id);
-      return res.json(userBiodata);
+      const manipulatedBio = {
+        userId: userBiodata.userId,
+        username: userBiodata.User.username,
+        fullname: `${userBiodata.firstName} ${userBiodata.lastName}`,
+        info: userBiodata.infoBio,
+        address: userBiodata.address,
+        birthDate: formatDate(userBiodata.birthDate),
+        gender: userBiodata.gender,
+        joinAt: formatDate(userBiodata.User.createdAt),
+      };
+      return res.json(manipulatedBio);
     } catch (error) {
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -74,13 +90,13 @@ class UserController {
     try {
       const userBiodata = await userModel.getUserBiodata(id);
       if (userBiodata !== null) {
-        userModel.updateBiodata(userData, id);
+        userModel.updateBiodata(id, userData);
       } else if (userBiodata === null) {
-        userModel.createBiodata(userData, id);
+        userModel.createBiodata(id, userData);
       }
       return res.json({message: "success update biodata"});
     } catch (error) {
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 }
