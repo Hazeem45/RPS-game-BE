@@ -7,11 +7,16 @@ class GameController {
     const {roomName, player1Choice} = req.body;
 
     try {
-      gameModel.createNewRoom(idPlayer1, roomName, player1Choice);
-      return res.json({message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`});
+      const roomNameActive = await gameModel.findRoomNameActive(roomName);
+      if (roomNameActive) {
+        res.statusCode = 409;
+        return res.json({message: `room with name: ${roomName} is available`});
+      } else {
+        gameModel.createNewRoom(idPlayer1, roomName, player1Choice);
+        return res.json({message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`});
+      }
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -27,8 +32,7 @@ class GameController {
       }));
       return res.json(manipulatedRooms);
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -44,8 +48,7 @@ class GameController {
       }));
       return res.json(manipulatedRooms);
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -61,8 +64,7 @@ class GameController {
       }));
       return res.json(manipulatedRooms);
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -102,8 +104,7 @@ class GameController {
         return res.json(manipulatedRoom);
       }
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -156,8 +157,7 @@ class GameController {
         }
       }
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 
@@ -184,11 +184,9 @@ class GameController {
         date: formatDate(data.updatedAt),
         time: getTimeFromDate(data.updatedAt),
       }));
-      console.log(id);
       return res.json(gameHistory);
     } catch (error) {
-      console.log(error);
-      return res.status(500).send({message: `${error}`});
+      return res.status(500).send({message: error});
     }
   };
 }

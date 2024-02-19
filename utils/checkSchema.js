@@ -111,8 +111,41 @@ const biodataSchema = () => {
   });
 };
 
+const newRoomSchema = () => {
+  return checkSchema({
+    roomName: {
+      isString: {
+        errorMessage: "must be string",
+      },
+      isLength: {
+        options: {min: 4, max: 10},
+        errorMessage: "room name must be at least 5 chars and max 10 chars",
+      },
+    },
+    player1Choice: {
+      isIn: {
+        options: [["rock", "paper", "scissors"]],
+        errorMessage: "your choice must be one of rock, paper, scissors",
+      },
+    },
+  });
+};
+
+const updateRoomSchema = () => {
+  return checkSchema({
+    player2Choice: {
+      isIn: {
+        options: [["rock", "paper", "scissors"]],
+        errorMessage: "your choice must be one of rock, paper, scissors",
+      },
+    },
+  });
+};
+
 module.exports = {
   registrationSchema,
   loginSchema,
   biodataSchema,
+  newRoomSchema,
+  updateRoomSchema,
 };

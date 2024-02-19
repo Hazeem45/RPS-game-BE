@@ -11,6 +11,15 @@ class GameModel {
     });
   };
 
+  findRoomNameActive = (roomName) => {
+    return database.Game_Room.findOne({
+      where: {
+        roomName,
+        roomStatus: "available",
+      },
+    });
+  };
+
   getAllRooms = () => {
     return database.Game_Room.findAll({
       attributes: ["id", "roomName", "roomStatus"],
