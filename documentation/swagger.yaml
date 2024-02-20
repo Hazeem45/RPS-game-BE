@@ -1,0 +1,749 @@
+openapi : 3.0.3
+info:
+  title: "API Collection of RPS Game"
+  description: "source code: https://github.com/Hazeem45/RPS-game-BE"
+  version: "1.0"
+servers: 
+  - url: "http://localhost:3000"
+paths: 
+  /user/register:
+    post: 
+      tags:
+        - user
+      summary: "Registration API"
+      description: "create new credential"
+      requestBody:
+        description:
+          username  at least 5 chars and max 15 chars, cannot contain spaces, dot or underscore max 1.
+          email must use valid format email.
+          password  must containt number and at least 8 chars.
+          if you enter capital letters in your username or email, they will be lowercase.
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                username:
+                  type: string
+                  example: "username"
+                email:
+                  type: string
+                  example: "example@gmail.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '201':
+          description: "Created, success create new credential"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example: "registration succesful"
+        '400':
+          description: "Bad Request, invalid format in request body"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  type:
+                    type: string
+                    example: "field"
+                  value:
+                    type: string
+                    example: "useremail@"
+                  msg:
+                    type: string
+                    example: "format email is invalid"
+                  path:
+                    type: string
+                    example: "email"
+                  location:
+                    type: string
+                    example: "body"
+                    
+        '409':
+          description: "Conflict, username or email already used"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "username is already used, try another!"
+        '500':
+          description: "Internal Server Error"
+  /user/login:
+    post: 
+      tags:
+        - user
+      summary: "Sign in with existing credential"
+      description: "return access token to be used in the authorize field"
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: string
+                  example: "example@gmail.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  accessToken:
+                    type: string
+                    example: "your_token_will_be_here"
+        '400':
+          description: "Bad Request, invalid format in request body"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  type:
+                    type: string
+                    example: "field"
+                  value:
+                    type: string
+                    example: "pswrd"
+                  msg:
+                    type: string
+                    example: "the password must be at least 8 chars and containt a numbers"
+                  path:
+                    type: string
+                    example: "password"
+                  location:
+                    type: string
+                    example: "body"
+        '401':
+          description: "Unauthorized, wrong password"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "password is incorrect!"
+        '404':
+          description: "Not Found, email not found in database"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "user with email: player@example.com not found"
+        '500':
+          description: "Internal Server Error"
+  /user:
+    get: 
+      tags:
+        - user
+      summary: "Personal data API"
+      description: "returns user data according to the user Id on the token entered"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  id:
+                    type: integer
+                    example: "1"
+                  username:
+                    type: string
+                    example: "user_1"
+                  email:
+                    type: string
+                    example: "example@gmail.com"
+                  joinAt:
+                    type: string
+                    example: "19 February 2024"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '500':
+          description: "Internal Server Error"
+  /user/biodata:
+    put: 
+      tags:
+        - user
+      summary: "update user biodata API"
+      description: "updating user biodata according to the user Id on the token entered"
+      security:
+        - bearerAuth: []
+      requestBody: 
+        description: firstname/lastname cannot use spaces and cannot contain number, infoBio/address are custom, birthDate format is DD/MM/YYYY, gender must be one of male, female, other
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                firstName:
+                  type: string
+                  example: "John"
+                lastName:
+                  type: string
+                  example: "Wick"
+                infoBio:
+                  type: string
+                  example: "just keep swimming"
+                address:
+                  type: string
+                  example: "Republic of Localhost"
+                birthDate:
+                  type: string
+                  example: "17/08/1945"
+                gender:
+                  type: string
+                  example: "male"
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example: "success update biodata"
+        '400':
+          description: "Bad Request, invalid format in request body"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  type:
+                    type: string
+                    example: "field"
+                  value:
+                    type: string
+                    example: "albert 69"
+                  msg:
+                    type: string
+                    example: "must be letters without spaces"
+                  path:
+                    type: string
+                    example: "firstName"
+                  location:
+                    type: string
+                    example: "body"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '500':
+          description: "Internal Server Error"
+    get: 
+      tags:
+        - user
+      summary: "user biodata API"
+      description: "return user biodata according to the user Id on the token entered"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  userId:
+                    type: integer
+                    example: "3"
+                  username:
+                    type: string
+                    example: "swagger.user"
+                  fullname:
+                    type: string
+                    example: "John Wick"
+                  info:
+                    type: string
+                    example: "just keep swimming"
+                  address:
+                    type: string
+                    example: "Republic of Localhost"
+                  birthDate:
+                    type: string
+                    example: "17 August 1975"
+                  gender:
+                    type: string
+                    example: "male"
+                  joinAt: 
+                    type: string
+                    example: "18 February 2024"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '500':
+          description: "Internal Server Error"
+  /game/new-room:
+    post: 
+      tags:
+        - game
+      summary: "add new room API"
+      description: "create new game room"
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 
+          roomName at least 5 chars and max 10 chars. player1Choice choice must be one of rock, paper, scissors.
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                roomName:
+                  type: string
+                  example: "John Room"
+                player1Choice:
+                  type: string
+                  example: "rock"
+      responses:
+        '201':
+          description: "Created, success create new game room"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example: "room successfully created, waiting for player 2 to join and the result will be updated"
+        '400':
+          description: "Bad Request, invalid format in request body"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  type:
+                    type: string
+                    example: "field"
+                  value:
+                    type: string
+                    example: "Swagger Room"
+                  msg:
+                    type: string
+                    example: "room name must be at least 5 chars and max 10 chars"
+                  path:
+                    type: string
+                    example: "roomName"
+                  location:
+                    type: string
+                    example: "body"
+        '409':
+          description: "Conflict, name of room is available"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "room with name: John Room is available"
+        '500':
+          description: "Internal Server Error"
+  /game/all-rooms:
+    get: 
+      tags:
+        - game
+      summary: "all room API"
+      description: "returns all game room with status Available and Finish"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    roomId:
+                      type: integer
+                      example: 12
+                    roomName:
+                      type: string
+                      example: "John Room"
+                    player1:
+                      type: string
+                      example: "swagger"
+                    player2:
+                      example: "null/player2username"
+                    roomStatus:
+                      type: string
+                      example: "available/finsih"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '500':
+          description: "Internal Server Error"
+  /game/available-rooms:
+    get: 
+      tags:
+        - game
+      summary: "available room API"
+      description: "returns game room with status Available  only"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    roomId:
+                      type: integer
+                      example: 12
+                    roomName:
+                      type: string
+                      example: "John Room"
+                    player1:
+                      type: string
+                      example: "swagger"
+                    player2:
+                      example:
+                    roomStatus:
+                      type: string
+                      example: "available"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '500':
+          description: "Internal Server Error"
+  /game/finished-rooms:
+    get: 
+      tags:
+        - game
+      summary: "finished room API"
+      description: "returns game room with status Finish only"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    roomId:
+                      type: integer
+                      example: 7
+                    roomName:
+                      type: string
+                      example: "John Room"
+                    player1:
+                      type: string
+                      example: "swagger"
+                    player2:
+                      type: string
+                      example: usertest
+                    roomStatus:
+                      type: string
+                      example: "finsih"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '500':
+          description: "Internal Server Error"
+  /game/room/{roomId}:
+    get: 
+      tags:
+        - game
+      summary: "game room detail API"
+      description: "returns game room in detail"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    roomId:
+                      type: integer
+                      example: 8
+                    roomName:
+                      type: string
+                      example: "Aladeen"
+                    player1:
+                      type: string
+                      example: "player_"
+                    player1Choice:
+                      type: string
+                      example: "choice is hidden"
+                    player2:
+                      example: null
+                    player2Choice:
+                      example: null
+                    gameResult:
+                      example: null
+                    roomStatus:
+                      type: string
+                      example: "available"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '404':
+          description: "Not Found, email not found in database"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "room with id: 129 doesn't exist!"
+        '500':
+          description: "Internal Server Error"
+    put: 
+      tags:
+        - game
+      summary: "update game room detail API"
+      description: "updating game room in detail"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody: 
+        description: 
+          player2Choice choice must be one of rock, paper, scissors.
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                player2Choice:
+                  type: string
+                  example: "rock"
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    roomName:
+                      type: string
+                      example: "Game Room"
+                    player1Choice:
+                      type: string
+                      example: "paper"
+                    player2:
+                      example: "paper"
+                    result:
+                      example: "draw"
+        '400':
+          description: "Bad Request, invalid format in request body"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  type:
+                    type: string
+                    example: "field"
+                  value:
+                    type: string
+                    example: "gun"
+                  msg:
+                    type: string
+                    example: "your choice must be one of rock, paper, scissors"
+                  path:
+                    type: string
+                    example: "player2Choice"
+                  location:
+                    type: string
+                    example: "body"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '403':
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "you cannot play against yourself!"
+        '404':
+          description: "Not Found, email not found in database"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "room with id: 129 doesn't exist!"
+        '500':
+          description: "Internal Server Error"
+  /game/history:
+    get: 
+      tags:
+        - game
+      summary: "user game history API"
+      description: "returns game room in detail according to the user Id on the token entered"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    roomId:
+                      type: integer
+                      example: 8
+                    roomName:
+                      type: string
+                      example: "Game Room"
+                    resultGame:
+                      type: string
+                      example: "draw"
+                    date:
+                      type: string
+                      example: "21 Februari 2024"
+                    time:
+                      type: string
+                      example: "21:30"
+        '401':
+          description: "Unauthorized, token error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "Unauthorized, token not provided"
+        '404':
+          description: "Not Found, email not found in database"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+                    example:  "room with id: 129 doesn't exist!"
+        '500':
+          description: "Internal Server Error"
+  
+components:
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
