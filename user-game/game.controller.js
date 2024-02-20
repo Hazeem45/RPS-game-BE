@@ -13,6 +13,7 @@ class GameController {
         return res.json({message: `room with name: ${roomName} is available`});
       } else {
         gameModel.createNewRoom(idPlayer1, roomName, player1Choice);
+        res.statusCode = 201;
         return res.json({message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`});
       }
     } catch (error) {
@@ -142,6 +143,7 @@ class GameController {
           // console.log(resultPlayer2);
           gameModel.updateRoom(roomId, idPlayer2, player2Choice, resultPlayer1, resultPlayer2);
           const gameRecord = {
+            roomName: roomDetail.roomName,
             player1Choice: roomDetail.player1Choice,
             yourChoice: player2Choice,
             result: null,

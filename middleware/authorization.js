@@ -8,11 +8,25 @@ const authorization = (req, res, next) => {
       res.statusCode = 401;
       return res.json({message: "unauthorized, token not provided"});
     } else {
-      const token = jwt.verify(authorization, process.env.SECRET_KEY);
+      const splitedToken = authorization.split(" ")[1];
+      const token = jwt.verify(splitedToken, process.env.SECRET_KEY);
       req.token = token;
     }
     next();
   } catch (error) {
+    if (error.name === "JsonWebTokenError") {
+      res.statusCode = 401;
+      return res.json({
+        name: error.name,
+        message: error.message,
+      });
+    } else if (error.name === "TokenExpiredError") {
+      res.statusCode = 401;
+      return res.json({
+        name: error.name,
+        message: error.message,
+      });
+    }
     return res.status(500).send({error});
   }
 };
