@@ -1,3 +1,4 @@
+const {base64EncodeURLSafe, base64DecodeURLSafe} = require("../utils/base64URLSafeCustom");
 const formatDate = require("../utils/formatDate");
 const gameModel = require("./game.model");
 
@@ -10,14 +11,14 @@ class GameController {
       const roomNameActive = await gameModel.findRoomNameActive(roomName);
       if (roomNameActive) {
         res.statusCode = 409;
-        return res.json({message: `room with name: ${roomName} is available`});
+        return res.json({message: `room with name: ${roomName} is active`});
       } else {
         gameModel.createNewRoom(idPlayer1, roomName, player1Choice);
         res.statusCode = 201;
         return res.json({message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`});
       }
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
@@ -25,7 +26,7 @@ class GameController {
     try {
       const allRooms = await gameModel.getAllRooms();
       const manipulatedRooms = allRooms.map((data) => ({
-        roomId: data.id,
+        roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
         player1: data["player1.username"],
         player2: data["player2.username"],
@@ -33,7 +34,7 @@ class GameController {
       }));
       return res.json(manipulatedRooms);
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
@@ -41,7 +42,7 @@ class GameController {
     try {
       const availableRooms = await gameModel.getRoomWithStatusAvailable();
       const manipulatedRooms = availableRooms.map((data) => ({
-        roomId: data.id,
+        roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
         player1: data["player1.username"],
         player2: data["player2.username"],
@@ -49,28 +50,35 @@ class GameController {
       }));
       return res.json(manipulatedRooms);
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
   getFinishedRoom = async (req, res) => {
     try {
       const availableRooms = await gameModel.getRoomWithStatusFinish();
-      const manipulatedRooms = availableRooms.map((data) => ({
-        roomId: data.id,
-        roomName: data.roomName,
-        player1: data["player1.username"],
-        player2: data["player2.username"],
-        roomStatus: data.roomStatus,
-      }));
-      return res.json(manipulatedRooms);
+      console.log(availableRooms);
+      if (availableRooms.length > 0) {
+        const manipulatedRooms = availableRooms.map((data) => ({
+          roomId: base64EncodeURLSafe(data.id),
+          roomName: data.roomName,
+          player1: data["player1.username"],
+          player2: data["player2.username"],
+          roomStatus: data.roomStatus,
+        }));
+        return res.json(manipulatedRooms);
+      } else {
+        return res.json({message: "finished room not found"});
+      }
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
   getGameRoomDetails = async (req, res) => {
-    const {roomId} = req.params;
+    const {encodedId} = req.params;
+    const roomId = base64DecodeURLSafe(encodedId);
+
     try {
       const roomDetail = await gameModel.getRoomDetails(roomId);
       if (!roomDetail) {
@@ -84,7 +92,7 @@ class GameController {
         }
 
         const manipulatedRoom = {
-          roomId: roomDetail.id,
+          roomId: base64EncodeURLSafe(roomDetail.id),
           roomName: roomDetail.roomName,
           player1: roomDetail.player1.username,
           player1Choice: roomDetail.player1Choice,
@@ -105,12 +113,13 @@ class GameController {
         return res.json(manipulatedRoom);
       }
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
   updateGameRoom = async (req, res) => {
-    const {roomId} = req.params;
+    const {encodedId} = req.params;
+    const roomId = base64DecodeURLSafe(encodedId);
     const idPlayer2 = req.token.id;
     const {player2Choice} = req.body;
     try {
@@ -139,8 +148,6 @@ class GameController {
             resultPlayer1 = "draw";
             resultPlayer2 = "draw";
           }
-          // console.log(resultPlayer1);
-          // console.log(resultPlayer2);
           gameModel.updateRoom(roomId, idPlayer2, player2Choice, resultPlayer1, resultPlayer2);
           const gameRecord = {
             roomName: roomDetail.roomName,
@@ -159,7 +166,7 @@ class GameController {
         }
       }
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
@@ -188,7 +195,7 @@ class GameController {
       }));
       return res.json(gameHistory);
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 }

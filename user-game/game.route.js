@@ -9,8 +9,8 @@ gameRouter.post("/new-room", newRoomSchema(), validation, authorization, gameCon
 gameRouter.get("/all-rooms", authorization, gameController.getAllGameRoom);
 gameRouter.get("/available-rooms", authorization, gameController.getAvailableRoom);
 gameRouter.get("/finished-rooms", authorization, gameController.getFinishedRoom);
-gameRouter.get("/room/:roomId", authorization, gameController.getGameRoomDetails);
-gameRouter.put("/room/:roomId", updateRoomSchema(), validation, authorization, gameController.updateGameRoom);
+gameRouter.get("/room/:encodedId", authorization, gameController.getGameRoomDetails);
+gameRouter.put("/room/:encodedId", updateRoomSchema(), validation, authorization, gameController.updateGameRoom);
 gameRouter.get("/history", authorization, gameController.getGameHistory);
 
 module.exports = gameRouter;
