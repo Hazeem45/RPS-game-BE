@@ -1,3 +1,4 @@
+const {encrypt, decrypt} = require("../utils/encryption");
 const formatDate = require("../utils/formatDate");
 const userModel = require("./user.model");
 const jwt = require("jsonwebtoken");
@@ -32,12 +33,15 @@ class UserController {
 
     try {
       const registeredUser = await userModel.getRegisteredUser(email, password);
+      const manipulatedData = {
+        encryptedId: encrypt(registeredUser.id.toString()),
+        username: registeredUser.username,
+      };
       if (registeredUser) {
-        const token = jwt.sign(registeredUser, process.env.SECRET_KEY, {expiresIn: "1d"});
+        const token = jwt.sign(manipulatedData, process.env.SECRET_KEY, {expiresIn: "1d"});
         return res.json({accessToken: token});
       } else if (!registeredUser) {
         const registeredEmail = await userModel.getExistingEmail(email);
-        console.log(registeredEmail);
         if (!registeredEmail) {
           res.statusCode = 404;
           return res.json({message: `user with email: ${email} not found`});
@@ -51,7 +55,9 @@ class UserController {
   };
 
   getUserDetailByToken = async (req, res) => {
-    const {id} = req.token;
+    const {encryptedId} = req.token;
+    const id = decrypt(encryptedId);
+
     try {
       const userDetail = await userModel.getUserById(id);
       const manipulatedData = {
@@ -67,14 +73,27 @@ class UserController {
   };
 
   getUserBiodata = async (req, res) => {
-    const {id} = req.token;
+    const {encryptedId} = req.token;
+    const id = decrypt(encryptedId);
+
     try {
       const userBiodata = await userModel.getUserBiodata(id);
-      console.log(userBiodata.birthDate);
+      const setFullname = () => {
+        if (userBiodata.firstName && userBiodata.lastName) {
+          return `${userBiodata.firstName} ${userBiodata.lastName}`;
+        } else if (userBiodata.firstName || userBiodata.lastName) {
+          if (userBiodata.firstName) {
+            return userBiodata.firstName;
+          } else if (userBiodata.lastName) {
+            return userBiodata.lastName;
+          }
+        } else {
+          return userBiodata.User.username;
+        }
+      };
       const manipulatedBio = {
-        userId: userBiodata.userId,
         username: userBiodata.User.username,
-        fullname: `${userBiodata.firstName} ${userBiodata.lastName}`,
+        fullname: setFullname(),
         info: userBiodata.infoBio,
         address: userBiodata.address,
         birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
@@ -88,7 +107,8 @@ class UserController {
   };
 
   updateUserBiodata = async (req, res) => {
-    const {id} = req.token;
+    const {encryptedId} = req.token;
+    const id = decrypt(encryptedId);
     const userData = req.body;
 
     try {

@@ -1,19 +1,22 @@
 const {base64EncodeURLSafe, base64DecodeURLSafe} = require("../utils/base64URLSafeCustom");
+const {decrypt} = require("../utils/encryption");
 const formatDate = require("../utils/formatDate");
 const gameModel = require("./game.model");
 
 class GameController {
   createNewGameRoom = async (req, res) => {
-    const idPlayer1 = req.token.id;
+    const {encryptedId} = req.token;
+    const idPlayer1 = decrypt(encryptedId);
     const {roomName, player1Choice} = req.body;
 
     try {
-      const roomNameActive = await gameModel.findRoomNameActive(roomName);
+      const roomStatus = "available".toUpperCase();
+      const roomNameActive = await gameModel.findRoomNameActive(roomName, roomStatus);
       if (roomNameActive) {
         res.statusCode = 409;
         return res.json({message: `room with name: ${roomName} is active`});
       } else {
-        gameModel.createNewRoom(idPlayer1, roomName, player1Choice);
+        gameModel.createNewRoom(idPlayer1, roomName, player1Choice.toUpperCase(), roomStatus);
         res.statusCode = 201;
         return res.json({message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`});
       }
@@ -39,8 +42,9 @@ class GameController {
   };
 
   getAvailableRoom = async (req, res) => {
+    const roomStatus = "available".toUpperCase();
     try {
-      const availableRooms = await gameModel.getRoomWithStatusAvailable();
+      const availableRooms = await gameModel.getRoomByStatus(roomStatus);
       const manipulatedRooms = availableRooms.map((data) => ({
         roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
@@ -55,11 +59,11 @@ class GameController {
   };
 
   getFinishedRoom = async (req, res) => {
+    const roomStatus = "finish".toUpperCase();
     try {
-      const availableRooms = await gameModel.getRoomWithStatusFinish();
-      console.log(availableRooms);
-      if (availableRooms.length > 0) {
-        const manipulatedRooms = availableRooms.map((data) => ({
+      const finishedRooms = await gameModel.getRoomByStatus(roomStatus);
+      if (finishedRooms.length > 0) {
+        const manipulatedRooms = finishedRooms.map((data) => ({
           roomId: base64EncodeURLSafe(data.id),
           roomName: data.roomName,
           player1: data["player1.username"],
@@ -83,10 +87,10 @@ class GameController {
       const roomDetail = await gameModel.getRoomDetails(roomId);
       if (!roomDetail) {
         res.statusCode = 404;
-        return res.json({message: `room with id: ${roomId} doesn't exist!`});
+        return res.json({message: `room with id: ${encodedId} doesn't exist!`});
       } else {
         if (roomDetail.player2 === null) {
-          if (req.token.id !== roomDetail.player1.id) {
+          if (decrypt(req.token.encryptedId) !== roomDetail.player1.id.toString()) {
             roomDetail.player1Choice = "choice is hidden";
           }
         }
@@ -119,50 +123,55 @@ class GameController {
 
   updateGameRoom = async (req, res) => {
     const {encodedId} = req.params;
+    const {encryptedId} = req.token;
     const roomId = base64DecodeURLSafe(encodedId);
-    const idPlayer2 = req.token.id;
+    const idPlayer2 = decrypt(encryptedId);
     const {player2Choice} = req.body;
+
     try {
+      const roomStatus = "finish".toUpperCase();
       const roomDetail = await gameModel.getRoomDetails(roomId);
       if (!roomDetail) {
         res.statusCode = 404;
-        return res.json({message: `room with id: ${roomId} doesn't exist!`});
+        return res.json({message: `room with id: ${encodedId} doesn't exist!`});
       } else {
-        if (idPlayer2 === roomDetail.player1.id) {
-          res.statusCode = 403;
-          return res.json({message: "you cannot play against yourself!"});
-        } else if (roomDetail.roomStatus === "finish") {
+        if (roomDetail.roomStatus === roomStatus) {
           res.statusCode = 403;
           return res.json({message: "the game only can be played once"});
         } else {
-          const player1Choice = roomDetail.player1Choice;
-          let resultPlayer1 = null;
-          let resultPlayer2 = null;
-          if ((player1Choice === "rock" && player2Choice === "scissors") || (player1Choice === "paper" && player2Choice === "rock") || (player1Choice === "scissors" && player2Choice === "paper")) {
-            resultPlayer1 = "win";
-            resultPlayer2 = "lose";
-          } else if ((player1Choice === "rock" && player2Choice === "paper") || (player1Choice === "paper" && player2Choice === "scissors") || (player1Choice === "scissors" && player2Choice === "rock")) {
-            resultPlayer1 = "lose";
-            resultPlayer2 = "win";
-          } else if ((player1Choice === "rock" && player2Choice === "rock") || (player1Choice === "paper" && player2Choice === "paper") || (player1Choice === "scissors" && player2Choice === "scissors")) {
-            resultPlayer1 = "draw";
-            resultPlayer2 = "draw";
+          if (parseInt(idPlayer2) === roomDetail.player1.id) {
+            res.statusCode = 403;
+            return res.json({message: "you cannot play against yourself!"});
+          } else {
+            const player1Choice = roomDetail.player1Choice.toLowerCase();
+            let resultPlayer1 = null;
+            let resultPlayer2 = null;
+            if ((player1Choice === "rock" && player2Choice === "scissors") || (player1Choice === "paper" && player2Choice === "rock") || (player1Choice === "scissors" && player2Choice === "paper")) {
+              resultPlayer1 = "win";
+              resultPlayer2 = "lose";
+            } else if ((player1Choice === "rock" && player2Choice === "paper") || (player1Choice === "paper" && player2Choice === "scissors") || (player1Choice === "scissors" && player2Choice === "rock")) {
+              resultPlayer1 = "lose";
+              resultPlayer2 = "win";
+            } else if ((player1Choice === "rock" && player2Choice === "rock") || (player1Choice === "paper" && player2Choice === "paper") || (player1Choice === "scissors" && player2Choice === "scissors")) {
+              resultPlayer1 = "draw";
+              resultPlayer2 = "draw";
+            }
+            gameModel.updateRoom(roomId, idPlayer2, player2Choice.toUpperCase(), resultPlayer1.toUpperCase(), resultPlayer2.toUpperCase(), roomStatus);
+            const gameRecord = {
+              roomName: roomDetail.roomName,
+              player1Choice: roomDetail.player1Choice,
+              yourChoice: player2Choice.toUpperCase(),
+              result: null,
+            };
+            if (resultPlayer1 === "win") {
+              gameRecord.result = `player 1 is the winner`;
+            } else if (resultPlayer1 === "lose") {
+              gameRecord.result = `player 2 is the winner`;
+            } else if (resultPlayer1 === "draw") {
+              gameRecord.result = `draw`;
+            }
+            return res.json(gameRecord);
           }
-          gameModel.updateRoom(roomId, idPlayer2, player2Choice, resultPlayer1, resultPlayer2);
-          const gameRecord = {
-            roomName: roomDetail.roomName,
-            player1Choice: roomDetail.player1Choice,
-            yourChoice: player2Choice,
-            result: null,
-          };
-          if (resultPlayer1 === "win") {
-            gameRecord.result = `player 1 is the winner`;
-          } else if (resultPlayer1 === "lose") {
-            gameRecord.result = `player 2 is the winner`;
-          } else if (resultPlayer1 === "draw") {
-            gameRecord.result = `draw`;
-          }
-          return res.json(gameRecord);
         }
       }
     } catch (error) {
@@ -171,7 +180,8 @@ class GameController {
   };
 
   getGameHistory = async (req, res) => {
-    const {id} = req.token;
+    const {encryptedId} = req.token;
+    const id = decrypt(encryptedId);
     try {
       const roomFinished = await gameModel.getDetailFinishedRoom(id);
 
@@ -187,7 +197,7 @@ class GameController {
       };
 
       const gameHistory = roomFinished.map((data) => ({
-        roomId: data.id,
+        roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
         resultGame: data.idPlayer1 === id ? data.resultPlayer1 : data.resultPlayer2,
         date: formatDate(data.updatedAt),

@@ -63,7 +63,7 @@ class UserModel {
     return database.User_Biodata.findOne({
       where: {userId: id},
       attributes: {
-        exclude: ["id", "createdAt", "updatedAt"],
+        exclude: ["id", "userId", "createdAt", "updatedAt"],
       },
       include: [
         {
