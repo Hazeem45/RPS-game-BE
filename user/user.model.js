@@ -20,10 +20,16 @@ class UserModel {
   };
 
   registerNewUser = (username, email, password) => {
-    database.User.create({
+    return database.User.create({
       username: username.toLowerCase(),
       email: email.toLowerCase(),
       password: md5(password),
+    });
+  };
+
+  createBiodata = (id) => {
+    database.User_Biodata.create({
+      userId: id,
     });
   };
 
@@ -82,18 +88,6 @@ class UserModel {
         where: {userId: id},
       }
     );
-  };
-
-  createBiodata = (id, userData) => {
-    database.User_Biodata.create({
-      birthDate: userData.birthDate,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      infoBio: userData.infoBio,
-      address: userData.address,
-      gender: userData.gender,
-      userId: id,
-    });
   };
 }
 

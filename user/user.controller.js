@@ -16,12 +16,14 @@ class UserController {
         res.statusCode = 409;
         return res.json({message: `${email} is alredy used on another account`});
       } else {
-        userModel.registerNewUser(username, email, password);
+        const newUser = await userModel.registerNewUser(username, email, password);
+        // auto create biodata while create new user
+        userModel.createBiodata(newUser.id);
         res.statusCode = 201;
         return res.json({message: `registration successful`});
       }
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
@@ -44,7 +46,7 @@ class UserController {
         return res.json({message: "password is incorrect!"});
       }
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
@@ -60,7 +62,7 @@ class UserController {
       };
       return res.json(manipulatedData);
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
@@ -68,35 +70,36 @@ class UserController {
     const {id} = req.token;
     try {
       const userBiodata = await userModel.getUserBiodata(id);
+      console.log(userBiodata.birthDate);
       const manipulatedBio = {
         userId: userBiodata.userId,
         username: userBiodata.User.username,
         fullname: `${userBiodata.firstName} ${userBiodata.lastName}`,
         info: userBiodata.infoBio,
         address: userBiodata.address,
-        birthDate: formatDate(userBiodata.birthDate),
+        birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
         gender: userBiodata.gender,
         joinAt: formatDate(userBiodata.User.createdAt),
       };
       return res.json(manipulatedBio);
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 
   updateUserBiodata = async (req, res) => {
     const {id} = req.token;
     const userData = req.body;
+
     try {
-      const userBiodata = await userModel.getUserBiodata(id);
-      if (userBiodata !== null) {
+      if (Object.keys(userData).length > 0) {
         userModel.updateBiodata(id, userData);
-      } else if (userBiodata === null) {
-        userModel.createBiodata(id, userData);
+        return res.json({message: "success update biodata"});
+      } else {
+        return res.json({message: "nothing to updated"});
       }
-      return res.json({message: "success update biodata"});
     } catch (error) {
-      return res.status(500).send({message: error});
+      return res.status(500).send({message: error.message});
     }
   };
 }

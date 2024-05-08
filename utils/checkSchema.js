@@ -69,40 +69,46 @@ const loginSchema = () => {
 const biodataSchema = () => {
   return checkSchema({
     firstName: {
+      optional: {options: {nullable: true}},
       isString: {
         errorMessage: "must be string",
       },
       matches: {
         options: /^[a-zA-Z]+$/,
-        errorMessage: "must be letters without spaces",
+        errorMessage: "must be letters without spaces and number",
       },
     },
     lastName: {
+      optional: {options: {nullable: true}},
       isString: {
         errorMessage: "must be string",
       },
       matches: {
         options: /^[a-zA-Z]+$/,
-        errorMessage: "must be letters without spaces",
+        errorMessage: "must be letters without spaces and number",
       },
     },
     infoBio: {
+      optional: {options: {nullable: true}},
       isString: {
         errorMessage: "must be string",
       },
     },
     address: {
+      optional: {options: {nullable: true}},
       isString: {
         errorMessage: "must be string",
       },
     },
     birthDate: {
+      optional: {options: {nullable: true}},
       matches: {
         options: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
         errorMessage: "must be in DD/MM/YYYY format",
       },
     },
     gender: {
+      optional: {options: {nullable: true}},
       isIn: {
         options: [["male", "female", "other"]],
         errorMessage: "must be one of male, female, other",
