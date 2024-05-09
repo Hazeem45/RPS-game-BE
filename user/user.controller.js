@@ -33,11 +33,11 @@ class UserController {
 
     try {
       const registeredUser = await userModel.getRegisteredUser(email, password);
-      const manipulatedData = {
-        encryptedId: encrypt(registeredUser.id.toString()),
-        username: registeredUser.username,
-      };
       if (registeredUser) {
+        const manipulatedData = {
+          encryptedId: encrypt(registeredUser.id.toString()),
+          username: registeredUser.username,
+        };
         const token = jwt.sign(manipulatedData, process.env.SECRET_KEY, {expiresIn: "1d"});
         return res.json({accessToken: token});
       } else if (!registeredUser) {
