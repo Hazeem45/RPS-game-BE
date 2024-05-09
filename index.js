@@ -8,9 +8,12 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./documentation/swagger.json");
 require("dotenv").config();
 
+// CDN CSS
+const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+
 app.use(cors());
 app.use(express.json());
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCssUrl: CSS_URL}));
 app.use("/user", userRouter);
 app.use("/game", gameRouter);
 
