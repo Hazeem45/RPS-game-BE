@@ -7,8 +7,8 @@ const registrationSchema = () => {
         errorMessage: "must be string",
       },
       isLength: {
-        options: {min: 5, max: 15},
-        errorMessage: "username must be at least 5 chars and max 15 chars",
+        options: {min: 5, max: 13},
+        errorMessage: "username must be at least 5 chars and max 13 chars",
       },
       custom: {
         options: (value) => {
@@ -41,7 +41,7 @@ const registrationSchema = () => {
       },
       matches: {
         options: /[0-9]/,
-        errorMessage: "the password must containt a numbers",
+        errorMessage: "the password must include at least one number",
       },
     },
   });
@@ -60,7 +60,11 @@ const loginSchema = () => {
       },
       isLength: {
         options: {min: 8},
-        errorMessage: "the password must be at least 8 chars and containt a numbers",
+        errorMessage: "the password must be at least 8 chars",
+      },
+      matches: {
+        options: /[0-9]/,
+        errorMessage: "the password must include at least one number",
       },
     },
   });
@@ -73,9 +77,9 @@ const biodataSchema = () => {
       isString: {
         errorMessage: "must be string",
       },
-      matches: {
-        options: /^[a-zA-Z]+$/,
-        errorMessage: "must be letters without spaces and number",
+      isLength: {
+        options: {max: 20},
+        errorMessage: "firstname max 20 chars",
       },
     },
     lastName: {
@@ -83,9 +87,9 @@ const biodataSchema = () => {
       isString: {
         errorMessage: "must be string",
       },
-      matches: {
-        options: /^[a-zA-Z]+$/,
-        errorMessage: "must be letters without spaces and number",
+      isLength: {
+        options: {max: 10},
+        errorMessage: "lastname max 10 chars",
       },
     },
     infoBio: {
@@ -93,11 +97,19 @@ const biodataSchema = () => {
       isString: {
         errorMessage: "must be string",
       },
+      isLength: {
+        options: {max: 150},
+        errorMessage: "info max 150 chars",
+      },
     },
     address: {
       optional: {options: {nullable: true}},
       isString: {
         errorMessage: "must be string",
+      },
+      isLength: {
+        options: {max: 43},
+        errorMessage: "info max 43 chars",
       },
     },
     birthDate: {
@@ -110,8 +122,8 @@ const biodataSchema = () => {
     gender: {
       optional: {options: {nullable: true}},
       isIn: {
-        options: [["male", "female", "other"]],
-        errorMessage: "must be one of male, female, other",
+        options: [["Male", "Female", "Other"]],
+        errorMessage: "must be one of Male, Female, Other",
       },
     },
   });
@@ -124,7 +136,7 @@ const newRoomSchema = () => {
         errorMessage: "must be string",
       },
       isLength: {
-        options: {min: 4, max: 10},
+        options: {min: 5, max: 10},
         errorMessage: "room name must be at least 5 chars and max 10 chars",
       },
     },
