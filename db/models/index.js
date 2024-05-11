@@ -8,12 +8,8 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/database.js")[env];
 const db = {};
-const pg = require("pg");
 
-const sequelize = new Sequelize(`${config.url}`, {
-  ...config,
-  dialectModules: pg,
-});
+const sequelize = new Sequelize(`${config.url}`, config);
 
 fs.readdirSync(__dirname)
   .filter((file) => {

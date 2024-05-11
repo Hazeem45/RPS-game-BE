@@ -1,4 +1,5 @@
 require("dotenv").config();
+const pg = require("pg");
 
 module.exports = {
   development: {
@@ -11,6 +12,7 @@ module.exports = {
         ca: process.env.CA_CERT,
       },
     },
+    dialectModules: pg,
   },
   production: {
     url: process.env.DATABASE_URL,
@@ -22,5 +24,6 @@ module.exports = {
         ca: process.env.CA_CERT,
       },
     },
+    dialectModules: pg,
   },
 };
