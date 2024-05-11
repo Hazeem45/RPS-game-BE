@@ -12,7 +12,7 @@ module.exports = {
         // ca: process.env.CA_CERT,
       },
     },
-    dialectModules: pg,
+    dialectModule: pg,
   },
   production: {
     url: process.env.DATABASE_URL,
@@ -24,6 +24,6 @@ module.exports = {
         // ca: process.env.CA_CERT,
       },
     },
-    dialectModules: pg,
+    dialectModule: pg,
   },
 };
