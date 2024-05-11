@@ -7,9 +7,9 @@ module.exports = {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
-        require: true,
-        rejectUnauthorized: true,
-        ca: process.env.CA_CERT,
+        require: false,
+        rejectUnauthorized: false,
+        // ca: process.env.CA_CERT,
       },
     },
     dialectModules: pg,
@@ -19,9 +19,9 @@ module.exports = {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
-        require: true,
-        rejectUnauthorized: true,
-        ca: process.env.CA_CERT,
+        require: false,
+        rejectUnauthorized: false,
+        // ca: process.env.CA_CERT,
       },
     },
     dialectModules: pg,
