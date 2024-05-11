@@ -7,9 +7,9 @@ module.exports = {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
-        require: true,
-        rejectUnauthorized: true,
-        ca: fs.readFileSync("./ca.pem").toString(),
+        require: false,
+        rejectUnauthorized: false,
+        // ca: fs.readFileSync("./ca.pem").toString(),
       },
     },
   },
@@ -18,9 +18,9 @@ module.exports = {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
-        require: true,
-        rejectUnauthorized: true,
-        ca: fs.readFileSync("./ca.pem").toString(),
+        require: false,
+        rejectUnauthorized: false,
+        // ca: fs.readFileSync("./ca.pem").toString(),
       },
     },
   },
