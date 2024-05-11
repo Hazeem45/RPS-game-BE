@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 
 module.exports = {
   development: {
@@ -8,7 +9,7 @@ module.exports = {
       ssl: {
         require: true,
         rejectUnauthorized: true,
-        ca: process.env.CA_CERT,
+        ca: fs.readFileSync("./ca.pem").toString(),
       },
     },
   },
@@ -19,7 +20,7 @@ module.exports = {
       ssl: {
         require: true,
         rejectUnauthorized: true,
-        ca: process.env.CA_CERT,
+        ca: fs.readFileSync("./ca.pem").toString(),
       },
     },
   },
