@@ -1,5 +1,4 @@
 require("dotenv").config();
-const fs = require("fs");
 
 module.exports = {
   development: {
@@ -7,9 +6,9 @@ module.exports = {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
-        require: false,
-        rejectUnauthorized: false,
-        // ca: fs.readFileSync("./ca.pem").toString(),
+        require: true,
+        rejectUnauthorized: true,
+        ca: process.env.CA_CERT,
       },
     },
   },
@@ -18,9 +17,9 @@ module.exports = {
     dialect: "postgres",
     dialectOptions: {
       ssl: {
-        require: false,
-        rejectUnauthorized: false,
-        // ca: fs.readFileSync("./ca.pem").toString(),
+        require: true,
+        rejectUnauthorized: true,
+        ca: process.env.CA_CERT,
       },
     },
   },
