@@ -9,7 +9,7 @@ const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/database.js")[env];
 const db = {};
 
-const sequelize = new Sequelize(`${config.url}`, config);
+const sequelize = new Sequelize(`${config.url}?sslmode=no-verify`, config);
 
 fs.readdirSync(__dirname)
   .filter((file) => {
