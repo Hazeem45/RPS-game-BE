@@ -164,11 +164,11 @@ class GameController {
               gameResult: null,
             };
             if (resultPlayer1 === "win") {
-              gameRecord.result = `YOU LOSE`;
+              gameRecord.gameResult = `YOU LOSE`;
             } else if (resultPlayer1 === "lose") {
-              gameRecord.result = `YOU WIN`;
+              gameRecord.gameResult = `YOU WIN`;
             } else if (resultPlayer1 === "draw") {
-              gameRecord.result = `DRAW`;
+              gameRecord.gameResult = `DRAW`;
             }
             return res.json(gameRecord);
           }
