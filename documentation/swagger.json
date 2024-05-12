@@ -7,6 +7,9 @@
   },
   "servers": [
     {
+      "url": "https://rps-game-be.vercel.app"
+    },
+    {
       "url": "http://localhost:3000"
     }
   ],
@@ -302,7 +305,7 @@
           }
         ],
         "requestBody": {
-          "description": "firstname/lastname cannot use spaces and cannot contain number, infoBio/address are custom, birthDate format is DD/MM/YYYY, gender must be one of male, female, other",
+          "description": "firstname max 20 chars, lastname max 10 chars, infoBio max 150 chars, address max 43 chars, birthDate format is DD/MM/YYYY, gender must be one of Male, Female, Other",
           "content": {
             "application/json": {
               "schema": {
@@ -367,15 +370,15 @@
                     },
                     "value": {
                       "type": "string",
-                      "example": "albert 69"
+                      "example": "July 02 1990"
                     },
                     "msg": {
                       "type": "string",
-                      "example": "must be letters without spaces"
+                      "example": "must be in DD/MM/YYYY format"
                     },
                     "path": {
                       "type": "string",
-                      "example": "firstName"
+                      "example": "birthDate"
                     },
                     "location": {
                       "type": "string",
