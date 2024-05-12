@@ -3,16 +3,9 @@ const pg = require("pg");
 
 module.exports = {
   development: {
-    url: process.env.DATABASE_URL,
+    url: "postgresql://rps_game:hazeemrpsgame@localhost:5432/rps_game",
     dialect: "postgres",
     dialectModules: pg,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: true,
-        ca: process.env.CA_CERT,
-      },
-    },
   },
   production: {
     url: process.env.DATABASE_URL,
