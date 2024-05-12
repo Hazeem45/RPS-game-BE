@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "API Collection of RPS Game",
+    "title": "API Documentation of RPS Game",
     "description": "source code: https://github.com/Hazeem45/RPS-game-BE",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "servers": [
     {
@@ -251,7 +251,7 @@
                   "properties": {
                     "id": {
                       "type": "integer",
-                      "example": "1"
+                      "example": 1
                     },
                     "username": {
                       "type": "string",
@@ -333,7 +333,7 @@
                   },
                   "gender": {
                     "type": "string",
-                    "example": "male"
+                    "example": "Male"
                   }
                 }
               }
@@ -429,10 +429,6 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "userId": {
-                      "type": "integer",
-                      "example": "3"
-                    },
                     "username": {
                       "type": "string",
                       "example": "swagger.user"
@@ -455,7 +451,7 @@
                     },
                     "gender": {
                       "type": "string",
-                      "example": "male"
+                      "example": "Male"
                     },
                     "joinAt": {
                       "type": "string",
@@ -570,7 +566,7 @@
             }
           },
           "409": {
-            "description": "Conflict, name of room is available",
+            "description": "Conflict, name of room is active/available",
             "content": {
               "application/json": {
                 "schema": {
@@ -578,7 +574,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "room with name: John Room is available"
+                      "example": "room with name: John Room is active"
                     }
                   }
                 }
@@ -614,8 +610,8 @@
                     "type": "object",
                     "properties": {
                       "roomId": {
-                        "type": "integer",
-                        "example": 12
+                        "type": "string",
+                        "example": "NT0vcm9vbUlkPz0x"
                       },
                       "roomName": {
                         "type": "string",
@@ -630,7 +626,7 @@
                       },
                       "roomStatus": {
                         "type": "string",
-                        "example": "available/finsih"
+                        "example": "AVAILABLE/FINISH"
                       }
                     }
                   }
@@ -683,8 +679,8 @@
                     "type": "object",
                     "properties": {
                       "roomId": {
-                        "type": "integer",
-                        "example": 12
+                        "type": "string",
+                        "example": "NT0vcm9vbUlkPz0x"
                       },
                       "roomName": {
                         "type": "string",
@@ -699,7 +695,7 @@
                       },
                       "roomStatus": {
                         "type": "string",
-                        "example": "available"
+                        "example": "AVAILABLE"
                       }
                     }
                   }
@@ -752,8 +748,8 @@
                     "type": "object",
                     "properties": {
                       "roomId": {
-                        "type": "integer",
-                        "example": 7
+                        "type": "string",
+                        "example": "NT0vcm9vbUlkPz0x"
                       },
                       "roomName": {
                         "type": "string",
@@ -769,7 +765,7 @@
                       },
                       "roomStatus": {
                         "type": "string",
-                        "example": "finsih"
+                        "example": "FINISH"
                       }
                     }
                   }
@@ -805,7 +801,7 @@
           "game"
         ],
         "summary": "game room detail API",
-        "description": "returns game room in detail",
+        "description": "returns game room in detail, you can get roomId from API /all-rooms or /available-rooms or /finished-rooms",
         "security": [
           {
             "bearerAuth": []
@@ -817,7 +813,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -832,8 +828,8 @@
                     "type": "object",
                     "properties": {
                       "roomId": {
-                        "type": "integer",
-                        "example": 8
+                        "type": "string",
+                        "example": "NT0vcm9vbUlkPz0x"
                       },
                       "roomName": {
                         "type": "string",
@@ -858,7 +854,7 @@
                       },
                       "roomStatus": {
                         "type": "string",
-                        "example": "available"
+                        "example": "AVAILABLE"
                       }
                     }
                   }
@@ -883,7 +879,7 @@
             }
           },
           "404": {
-            "description": "Not Found, email not found in database",
+            "description": "Not Found, room id not found in database",
             "content": {
               "application/json": {
                 "schema": {
@@ -891,7 +887,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "room with id: 129 doesn't exist!"
+                      "example": "room with id: NT0vcm9vbUlkPz0x doesn't exist!"
                     }
                   }
                 }
@@ -908,7 +904,7 @@
           "game"
         ],
         "summary": "update game room detail API",
-        "description": "updating game room in detail",
+        "description": "updating game room in detail, you can get roomId from API /all-rooms or /available-rooms. but you cannot in /finished-rooms because the game only can be played once (you can, but you will get a 403 Forbidden response)",
         "security": [
           {
             "bearerAuth": []
@@ -920,7 +916,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }
         ],
@@ -955,14 +951,13 @@
                         "example": "Game Room"
                       },
                       "player1Choice": {
-                        "type": "string",
-                        "example": "paper"
+                        "example": "PAPER"
                       },
                       "player2": {
-                        "example": "paper"
+                        "example": "PAPER"
                       },
                       "result": {
-                        "example": "draw"
+                        "example": "DRAW"
                       }
                     }
                   }
@@ -983,7 +978,7 @@
                     },
                     "value": {
                       "type": "string",
-                      "example": "gun"
+                      "example": "GUN"
                     },
                     "msg": {
                       "type": "string",
@@ -1035,7 +1030,7 @@
             }
           },
           "404": {
-            "description": "Not Found, email not found in database",
+            "description": "Not Found, room id not found in database",
             "content": {
               "application/json": {
                 "schema": {
@@ -1043,7 +1038,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "room with id: 129 doesn't exist!"
+                      "example": "room with id: NT0vcm9vbUlkPz0x doesn't exist!"
                     }
                   }
                 }
@@ -1062,7 +1057,7 @@
           "game"
         ],
         "summary": "user game history API",
-        "description": "returns game room in detail according to the user Id on the token entered",
+        "description": "returns game room in detail according to the user Id on the token entered, if you get empty array it means you haven't played yet",
         "security": [
           {
             "bearerAuth": []
@@ -1079,8 +1074,7 @@
                     "type": "object",
                     "properties": {
                       "roomId": {
-                        "type": "integer",
-                        "example": 8
+                        "example": "NT0vcm9vbUlkPz0x"
                       },
                       "roomName": {
                         "type": "string",
@@ -1088,7 +1082,7 @@
                       },
                       "resultGame": {
                         "type": "string",
-                        "example": "draw"
+                        "example": "DRAW"
                       },
                       "date": {
                         "type": "string",
@@ -1114,22 +1108,6 @@
                     "message": {
                       "type": "string",
                       "example": "Unauthorized, token not provided"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found, email not found in database",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "room with id: 129 doesn't exist!"
                     }
                   }
                 }

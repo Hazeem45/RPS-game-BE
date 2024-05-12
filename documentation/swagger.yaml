@@ -1,8 +1,8 @@
 openapi : 3.0.3
 info:
-  title: "API Collection of RPS Game"
+  title: "API Documentation of RPS Game"
   description: "source code: https://github.com/Hazeem45/RPS-game-BE"
-  version: "1.0"
+  version: "1.0.0"
 servers: 
   - url: "https://rps-game-be.vercel.app"
   - url: "http://localhost:3000"
@@ -15,10 +15,10 @@ paths:
       description: "create new credential"
       requestBody:
         description:
-          username  at least 5 chars and max 15 chars, cannot contain spaces, dot or underscore max 1.
+          "username  at least 5 chars and max 15 chars, cannot contain spaces, dot or underscore max 1.
           email must use valid format email.
           password  must containt number and at least 8 chars.
-          if you enter capital letters in your username or email, they will be lowercase.
+          if you enter capital letters in your username or email, they will be lowercase."
         content:
           application/json:
             schema:
@@ -170,7 +170,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                    example: "1"
+                    example: 1
                   username:
                     type: string
                     example: "user_1"
@@ -224,7 +224,7 @@ paths:
                   example: "17/08/1945"
                 gender:
                   type: string
-                  example: "male"
+                  example: "Male"
       responses:
         '200':
           description: "OK"
@@ -285,9 +285,6 @@ paths:
               schema:
                 type: "object"
                 properties:
-                  userId:
-                    type: integer
-                    example: "3"
                   username:
                     type: string
                     example: "swagger.user"
@@ -305,7 +302,7 @@ paths:
                     example: "17 August 1975"
                   gender:
                     type: string
-                    example: "male"
+                    example: "Male"
                   joinAt: 
                     type: string
                     example: "18 February 2024"
@@ -377,7 +374,7 @@ paths:
                     type: string
                     example: "body"
         '409':
-          description: "Conflict, name of room is available"
+          description: "Conflict, name of room is active/available"
           content:
             application/json:
               schema:
@@ -385,7 +382,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example:  "room with name: John Room is available"
+                    example:  "room with name: John Room is active"
         '500':
           description: "Internal Server Error"
   /game/all-rooms:
@@ -407,8 +404,8 @@ paths:
                   type: "object"
                   properties:
                     roomId:
-                      type: integer
-                      example: 12
+                      type: string
+                      example: NT0vcm9vbUlkPz0x
                     roomName:
                       type: string
                       example: "John Room"
@@ -419,7 +416,7 @@ paths:
                       example: "null/player2username"
                     roomStatus:
                       type: string
-                      example: "available/finsih"
+                      example: "AVAILABLE/FINISH"
         '401':
           description: "Unauthorized, token error"
           content:
@@ -451,8 +448,8 @@ paths:
                   type: "object"
                   properties:
                     roomId:
-                      type: integer
-                      example: 12
+                      type: string
+                      example: NT0vcm9vbUlkPz0x
                     roomName:
                       type: string
                       example: "John Room"
@@ -463,7 +460,7 @@ paths:
                       example:
                     roomStatus:
                       type: string
-                      example: "available"
+                      example: "AVAILABLE"
         '401':
           description: "Unauthorized, token error"
           content:
@@ -495,8 +492,8 @@ paths:
                   type: "object"
                   properties:
                     roomId:
-                      type: integer
-                      example: 7
+                      type: string
+                      example: NT0vcm9vbUlkPz0x
                     roomName:
                       type: string
                       example: "John Room"
@@ -508,7 +505,7 @@ paths:
                       example: usertest
                     roomStatus:
                       type: string
-                      example: "finsih"
+                      example: "FINISH"
         '401':
           description: "Unauthorized, token error"
           content:
@@ -526,7 +523,7 @@ paths:
       tags:
         - game
       summary: "game room detail API"
-      description: "returns game room in detail"
+      description: "returns game room in detail, you can get roomId from API /all-rooms or /available-rooms or /finished-rooms"
       security:
         - bearerAuth: []
       parameters:
@@ -534,7 +531,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: "OK"
@@ -546,8 +543,8 @@ paths:
                   type: "object"
                   properties:
                     roomId:
-                      type: integer
-                      example: 8
+                      type: string
+                      example: NT0vcm9vbUlkPz0x
                     roomName:
                       type: string
                       example: "Aladeen"
@@ -565,7 +562,7 @@ paths:
                       example: null
                     roomStatus:
                       type: string
-                      example: "available"
+                      example: "AVAILABLE"
         '401':
           description: "Unauthorized, token error"
           content:
@@ -577,7 +574,7 @@ paths:
                     type: string
                     example:  "Unauthorized, token not provided"
         '404':
-          description: "Not Found, email not found in database"
+          description: "Not Found, room id not found in database"
           content:
             application/json:
               schema:
@@ -585,14 +582,14 @@ paths:
                 properties:
                   message:
                     type: string
-                    example:  "room with id: 129 doesn't exist!"
+                    example:  "room with id: NT0vcm9vbUlkPz0x doesn't exist!"
         '500':
           description: "Internal Server Error"
     put: 
       tags:
         - game
       summary: "update game room detail API"
-      description: "updating game room in detail"
+      description: "updating game room in detail, you can get roomId from API /all-rooms or /available-rooms. but you cannot in /finished-rooms because the game only can be played once (you can, but you will get a 403 Forbidden response)"
       security:
         - bearerAuth: []
       parameters:
@@ -600,10 +597,10 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       requestBody: 
         description: 
-          player2Choice choice must be one of rock, paper, scissors.
+          "player2Choice choice must be one of rock, paper, scissors."
         content:
           application/json:
             schema:
@@ -626,12 +623,11 @@ paths:
                       type: string
                       example: "Game Room"
                     player1Choice:
-                      type: string
-                      example: "paper"
+                      example: "PAPER"
                     player2:
-                      example: "paper"
+                      example: "PAPER"
                     result:
-                      example: "draw"
+                      example: "DRAW"
         '400':
           description: "Bad Request, invalid format in request body"
           content:
@@ -644,7 +640,7 @@ paths:
                     example: "field"
                   value:
                     type: string
-                    example: "gun"
+                    example: "GUN"
                   msg:
                     type: string
                     example: "your choice must be one of rock, paper, scissors"
@@ -675,7 +671,7 @@ paths:
                     type: string
                     example:  "you cannot play against yourself!"
         '404':
-          description: "Not Found, email not found in database"
+          description: "Not Found, room id not found in database"
           content:
             application/json:
               schema:
@@ -683,7 +679,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example:  "room with id: 129 doesn't exist!"
+                    example:  "room with id: NT0vcm9vbUlkPz0x doesn't exist!"
         '500':
           description: "Internal Server Error"
   /game/history:
@@ -691,7 +687,7 @@ paths:
       tags:
         - game
       summary: "user game history API"
-      description: "returns game room in detail according to the user Id on the token entered"
+      description: "returns game room in detail according to the user Id on the token entered, if you get empty array it means you haven't played yet"
       security:
         - bearerAuth: []
       responses:
@@ -705,14 +701,13 @@ paths:
                   type: "object"
                   properties:
                     roomId:
-                      type: integer
-                      example: 8
+                      example: "NT0vcm9vbUlkPz0x"
                     roomName:
                       type: string
                       example: "Game Room"
                     resultGame:
                       type: string
-                      example: "draw"
+                      example: "DRAW"
                     date:
                       type: string
                       example: "21 Februari 2024"
@@ -729,16 +724,6 @@ paths:
                   message:
                     type: string
                     example:  "Unauthorized, token not provided"
-        '404':
-          description: "Not Found, email not found in database"
-          content:
-            application/json:
-              schema:
-                type: "object"
-                properties:
-                  message:
-                    type: string
-                    example:  "room with id: 129 doesn't exist!"
         '500':
           description: "Internal Server Error"
   
