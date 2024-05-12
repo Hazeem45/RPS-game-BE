@@ -6,7 +6,7 @@ const gameModel = require("./game.model");
 class GameController {
   createNewGameRoom = async (req, res) => {
     const {encryptedId} = req.token;
-    const idPlayer1 = decrypt(encryptedId);
+    const idPlayer1 = parseInt(decrypt(encryptedId));
     const {roomName, player1Choice} = req.body;
 
     try {
@@ -106,12 +106,12 @@ class GameController {
           roomStatus: roomDetail.roomStatus,
         };
 
-        if (roomDetail.resultPlayer1 === "win") {
-          manipulatedRoom.gameResult = `player1 is the winner`;
-        } else if (roomDetail.resultPlayer1 === "lose") {
-          manipulatedRoom.gameResult = `player2 is the winner`;
-        } else if (roomDetail.resultPlayer1 === "draw") {
-          manipulatedRoom.gameResult = `draw`;
+        if (roomDetail.resultPlayer1 === "WIN") {
+          manipulatedRoom.gameResult = `${roomDetail.player1.username} is the Winner`;
+        } else if (roomDetail.resultPlayer1 === "LOSE") {
+          manipulatedRoom.gameResult = `${roomDetail.player2.username} is the Winner`;
+        } else if (roomDetail.resultPlayer1 === "DRAW") {
+          manipulatedRoom.gameResult = `DRAW`;
         }
 
         return res.json(manipulatedRoom);
@@ -125,7 +125,7 @@ class GameController {
     const {encodedId} = req.params;
     const {encryptedId} = req.token;
     const roomId = base64DecodeURLSafe(encodedId);
-    const idPlayer2 = decrypt(encryptedId);
+    const idPlayer2 = parseInt(decrypt(encryptedId));
     const {player2Choice} = req.body;
 
     try {
@@ -161,14 +161,14 @@ class GameController {
               roomName: roomDetail.roomName,
               player1Choice: roomDetail.player1Choice,
               yourChoice: player2Choice.toUpperCase(),
-              result: null,
+              gameResult: null,
             };
             if (resultPlayer1 === "win") {
-              gameRecord.result = `player 1 is the winner`;
+              gameRecord.result = `YOU LOSE`;
             } else if (resultPlayer1 === "lose") {
-              gameRecord.result = `player 2 is the winner`;
+              gameRecord.result = `YOU WIN`;
             } else if (resultPlayer1 === "draw") {
-              gameRecord.result = `draw`;
+              gameRecord.result = `DRAW`;
             }
             return res.json(gameRecord);
           }
@@ -181,7 +181,7 @@ class GameController {
 
   getGameHistory = async (req, res) => {
     const {encryptedId} = req.token;
-    const id = decrypt(encryptedId);
+    const id = parseInt(decrypt(encryptedId));
     try {
       const roomFinished = await gameModel.getDetailFinishedRoom(id);
 
@@ -199,7 +199,7 @@ class GameController {
       const gameHistory = roomFinished.map((data) => ({
         roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
-        resultGame: data.idPlayer1 === id ? data.resultPlayer1 : data.resultPlayer2,
+        result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
         date: formatDate(data.updatedAt),
         time: getTimeFromDate(data.updatedAt),
       }));
