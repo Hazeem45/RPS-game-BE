@@ -1,6 +1,6 @@
 const formatTimeByTimezoneOffset = (dateObject) => {
   const timeFromDB = dateObject;
-  let userOffset = new Date("").getTimezoneOffset() / 60;
+  let userOffset = new Date().getTimezoneOffset() / 60;
   userOffset = -userOffset;
   let hour = timeFromDB.getUTCHours() + userOffset;
   const minute = timeFromDB.getUTCMinutes();
