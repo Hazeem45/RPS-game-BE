@@ -208,6 +208,9 @@ class GameController {
         result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
         date: formatDate(data.updatedAt),
         time: `${getTimeFromDate(data.updatedAt)} ${getTimeZone(data.updatedAt)}`,
+        realUpdateAt: data.updatedAt,
+        stringUpdateAt: data.updatedAt.toString(),
+        localStringUpdateAt: data.updatedAt.toLocaleString(),
       }));
       return res.json(gameHistory);
     } catch (error) {
