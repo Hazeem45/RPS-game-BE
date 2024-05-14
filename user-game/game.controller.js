@@ -1,7 +1,6 @@
 const {base64EncodeURLSafe, base64DecodeURLSafe} = require("../utils/base64URLSafeCustom");
 const {decrypt} = require("../utils/encryption");
 const formatDate = require("../utils/formatDate");
-const formatTimeByTimezoneOffset = require("../utils/formatTimeByTimezoneOffset");
 const gameModel = require("./game.model");
 
 class GameController {
@@ -191,9 +190,7 @@ class GameController {
         roomName: data.roomName,
         result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
         date: formatDate(data.updatedAt),
-        time: formatTimeByTimezoneOffset(data.updatedAt),
         updatedAt: data.updatedAt,
-        stringUpdate: data.updatedAt.toString(),
       }));
       return res.json(gameHistory);
     } catch (error) {
