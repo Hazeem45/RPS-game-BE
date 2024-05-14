@@ -9,7 +9,14 @@ const swaggerDocument = require("./documentation/swagger.json");
 const options = require("./utils/customSwagger");
 require("dotenv").config();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
+app.options("*", cors());
+
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 app.use("/user", userRouter);
