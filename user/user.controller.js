@@ -78,22 +78,10 @@ class UserController {
 
     try {
       const userBiodata = await userModel.getUserBiodata(id);
-      const setFullname = () => {
-        if (userBiodata.firstName && userBiodata.lastName) {
-          return `${userBiodata.firstName} ${userBiodata.lastName}`;
-        } else if (userBiodata.firstName || userBiodata.lastName) {
-          if (userBiodata.firstName) {
-            return userBiodata.firstName;
-          } else if (userBiodata.lastName) {
-            return userBiodata.lastName;
-          }
-        } else {
-          return userBiodata.User.username;
-        }
-      };
       const manipulatedBio = {
         username: userBiodata.User.username,
-        fullname: setFullname(),
+        firstName: userBiodata.firstName,
+        lastName: userBiodata.lastName,
         info: userBiodata.infoBio,
         address: userBiodata.address,
         birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,

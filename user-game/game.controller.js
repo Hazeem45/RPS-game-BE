@@ -184,16 +184,22 @@ class GameController {
     const id = parseInt(decrypt(encryptedId));
     try {
       const roomFinished = await gameModel.getDetailFinishedRoom(id);
+      const getTimeZone = (dateString) => {
+        const time = dateString.toString();
+        const splitedTime = time.split(" ");
+        const timeZone = splitedTime[5].replace(/0/g, "");
+        return timeZone;
+      };
 
       const getTimeFromDate = (dateString) => {
         const date = new Date(dateString);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        // Format hours to ensure consistency in 24-hour format
-        const formattedHours = (hours < 10 ? "0" : "") + hours;
-        // Pad single-digit minutes with a leading zero
-        const paddedMinutes = (minutes < 10 ? "0" : "") + minutes;
-        return `${formattedHours}:${paddedMinutes}`;
+        const stringDate = date.toLocaleString();
+        const time = stringDate;
+        const splitedTime = time.split(",");
+        const detailTime = splitedTime[1].split(":");
+        const hour = detailTime[0];
+        const minutes = detailTime[1];
+        return `${hour}:${minutes}`;
       };
 
       const gameHistory = roomFinished.map((data) => ({
@@ -201,7 +207,7 @@ class GameController {
         roomName: data.roomName,
         result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
         date: formatDate(data.updatedAt),
-        time: getTimeFromDate(data.updatedAt),
+        time: `${getTimeFromDate(data.updatedAt)} ${getTimeZone(data.updatedAt)}`,
       }));
       return res.json(gameHistory);
     } catch (error) {
