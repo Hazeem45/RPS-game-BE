@@ -1,5 +1,6 @@
 const {encrypt, decrypt} = require("../utils/encryption");
 const formatDate = require("../utils/formatDate");
+const formatTimeByTimezoneOffset = require("../utils/formatTimeByTimezoneOffset");
 const userModel = require("./user.model");
 const jwt = require("jsonwebtoken");
 
@@ -65,6 +66,7 @@ class UserController {
         username: userDetail.username,
         email: userDetail.email,
         joinAt: formatDate(userDetail.createdAt),
+        time: formatTimeByTimezoneOffset(userDetail.createdAt),
       };
       return res.json(manipulatedData);
     } catch (error) {

@@ -1,6 +1,7 @@
 const {base64EncodeURLSafe, base64DecodeURLSafe} = require("../utils/base64URLSafeCustom");
 const {decrypt} = require("../utils/encryption");
 const formatDate = require("../utils/formatDate");
+const formatTimeByTimezoneOffset = require("../utils/formatTimeByTimezoneOffset");
 const gameModel = require("./game.model");
 
 class GameController {
@@ -184,33 +185,15 @@ class GameController {
     const id = parseInt(decrypt(encryptedId));
     try {
       const roomFinished = await gameModel.getDetailFinishedRoom(id);
-      const getTimeZone = (dateString) => {
-        const time = dateString.toString();
-        const splitedTime = time.split(" ");
-        const timeZone = splitedTime[5].replace(/0/g, "");
-        return timeZone;
-      };
-
-      const getTimeFromDate = (dateString) => {
-        const date = new Date(dateString);
-        const stringDate = date.toLocaleString();
-        const time = stringDate;
-        const splitedTime = time.split(",");
-        const detailTime = splitedTime[1].split(":");
-        const hour = detailTime[0];
-        const minutes = detailTime[1];
-        return `${hour}:${minutes}`;
-      };
 
       const gameHistory = roomFinished.map((data) => ({
         roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
         result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
         date: formatDate(data.updatedAt),
-        time: `${getTimeFromDate(data.updatedAt)} ${getTimeZone(data.updatedAt)}`,
-        realUpdateAt: data.updatedAt,
-        stringUpdateAt: data.updatedAt.toString(),
-        localStringUpdateAt: data.updatedAt.toLocaleString(),
+        time: formatTimeByTimezoneOffset(data.updatedAt),
+        updatedAt: data.updatedAt,
+        stringUpdate: data.updatedAt.toString(),
       }));
       return res.json(gameHistory);
     } catch (error) {
