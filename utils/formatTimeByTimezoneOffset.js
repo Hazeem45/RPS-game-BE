@@ -1,6 +1,6 @@
 const formatTimeByTimezoneOffset = (dateObject) => {
   const timeFromDB = dateObject;
-  let userOffset = new Date().getTimezoneOffset() / 60;
+  let userOffset = new Date("2024-05-12T13:34:46.567Z").getTimezoneOffset() / 60;
   userOffset = -userOffset;
   let hour = timeFromDB.getUTCHours() + userOffset;
   const minute = timeFromDB.getUTCMinutes();
@@ -12,8 +12,13 @@ const formatTimeByTimezoneOffset = (dateObject) => {
   }
   const paddedHour = (hour < 10 ? "0" : "") + hour;
   const paddedMinute = (minute < 10 ? "0" : "") + minute;
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  return `${paddedHour}:${paddedMinute} ${UTC}`;
+  return {
+    time: `${paddedHour}:${paddedMinute} ${UTC}`,
+    userOffset: userOffset,
+    userTimeZone: userTimeZone,
+  };
 };
 
 module.exports = formatTimeByTimezoneOffset;
