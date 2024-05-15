@@ -1,5 +1,6 @@
 const {encrypt, decrypt} = require("../utils/encryption");
 const formatDate = require("../utils/formatDate");
+const timeFormatting = require("../utils/formatTime");
 const userModel = require("./user.model");
 const jwt = require("jsonwebtoken");
 
@@ -65,7 +66,7 @@ class UserController {
         username: userDetail.username,
         email: userDetail.email,
         joinDate: formatDate(userDetail.createdAt),
-        joinAt: userDetail.createdAt,
+        joinTime: timeFormatting(userDetail.createdAt),
       };
       return res.json(manipulatedData);
     } catch (error) {
@@ -88,7 +89,7 @@ class UserController {
         birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
         gender: userBiodata.gender,
         joinDate: formatDate(userBiodata.User.createdAt),
-        joinAt: userBiodata.User.createdAt,
+        joinTime: timeFormatting(userBiodata.User.createdAt),
       };
       return res.json(manipulatedBio);
     } catch (error) {
