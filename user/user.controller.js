@@ -88,6 +88,7 @@ class UserController {
         address: userBiodata.address,
         birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
         gender: userBiodata.gender,
+        profilePicture: userBiodata.profilePicture,
         joinDate: formatDate(userBiodata.User.createdAt),
         joinTime: timeFormatting(userBiodata.User.createdAt),
       };

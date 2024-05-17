@@ -77,6 +77,7 @@ class UserModel {
   updateBiodata = (id, userData) => {
     database.User_Biodata.update(
       {
+        profilePicture: userData.profilePicture,
         birthDate: userData.birthDate,
         firstName: userData.firstName,
         lastName: userData.lastName,

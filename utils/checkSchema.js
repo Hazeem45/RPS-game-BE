@@ -1,4 +1,6 @@
 const {checkSchema} = require("express-validator");
+const FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET;
+const firebaseUrlPattern = new RegExp(`^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/${FIREBASE_STORAGE_BUCKET}`);
 
 const registrationSchema = () => {
   return checkSchema({
@@ -124,6 +126,16 @@ const biodataSchema = () => {
       isIn: {
         options: [["Male", "Female", "Other"]],
         errorMessage: "must be one of Male, Female, Other",
+      },
+    },
+    profilePicture: {
+      optional: {options: {nullable: true}},
+      isURL: {
+        errorMessage: "must be a valid URL",
+      },
+      matches: {
+        options: firebaseUrlPattern,
+        errorMessage: "must be a valid Firebase storage link (we recommend to change photo only in our webApp https://rps-game-hazeem.vercel.app)",
       },
     },
   });
