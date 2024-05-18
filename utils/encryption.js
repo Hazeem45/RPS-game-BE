@@ -1,14 +1,19 @@
 const CryptoJS = require("crypto-js");
 
-// Fungsi untuk melakukan enkripsi
 const encrypt = (data) => {
-  return CryptoJS.AES.encrypt(data, process.env.ENCRYPTION_KEY).toString();
+  const encrypted = CryptoJS.AES.encrypt(data, process.env.ENCRYPTION_KEY, {
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  return encrypted.toString();
 };
 
-// Fungsi untuk melakukan dekripsi
 const decrypt = (encryptedData) => {
-  const bytes = CryptoJS.AES.decrypt(encryptedData, process.env.ENCRYPTION_KEY);
-  return bytes.toString(CryptoJS.enc.Utf8);
+  const decrypted = CryptoJS.AES.decrypt(encryptedData, process.env.ENCRYPTION_KEY, {
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  return decrypted.toString(CryptoJS.enc.Utf8);
 };
 
 module.exports = {encrypt, decrypt};
