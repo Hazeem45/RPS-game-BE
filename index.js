@@ -22,7 +22,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, options))
 app.use("/user", userRouter);
 app.use("/game", gameRouter);
 app.get("/", (req, res) => {
-  res.send({message: "Hello There! add /api-docs in url to open the API Documentation or Visit the Source Code 👉 https://github.com/Hazeem45/RPS-game-BE"});
+  res.send(`Hello There! add "/api-docs" in url to open the API Documentation or just Visit the Source Code 👉 https://github.com/Hazeem45/RPS-game-BE`);
 });
 
 app.listen(port, () => {
