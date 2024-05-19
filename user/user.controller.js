@@ -81,19 +81,19 @@ class UserController {
 
     try {
       const existedUsername = await userModel.getExistingUsername(username);
-      console.log(existedUsername.id);
-      if (id !== existedUsername.id) {
-        if (existedUsername) {
+
+      if (existedUsername) {
+        if (id !== existedUsername.id) {
           res.statusCode = 409;
           return res.json({message: `${username} is already used, try another!`});
         } else {
-          userModel.updateUsername(id, username);
-          return res.json({message: "success update biodata"});
+          if (existedUsername) {
+            return res.json({message: `${username} is your current username`});
+          }
         }
       } else {
-        if (existedUsername) {
-          return res.json({message: `${username} is your current username`});
-        }
+        userModel.updateUsername(id, username);
+        return res.json({message: "success update biodata"});
       }
     } catch (error) {
       return res.status(500).send({message: error.message});
