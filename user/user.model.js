@@ -6,7 +6,7 @@ class UserModel {
   getExistingUsername = (username) => {
     return database.User.findOne({
       where: {username: username.toLowerCase()},
-      attributes: ["username"],
+      attributes: ["id", "username"],
       raw: true,
     });
   };
