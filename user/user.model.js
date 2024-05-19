@@ -59,6 +59,17 @@ class UserModel {
     });
   };
 
+  updateUsername = (id, username) => {
+    database.User.update(
+      {
+        username: username.toLowerCase(),
+      },
+      {
+        where: {id},
+      }
+    );
+  };
+
   getUserBiodata = (id) => {
     return database.User_Biodata.findOne({
       where: {userId: id},

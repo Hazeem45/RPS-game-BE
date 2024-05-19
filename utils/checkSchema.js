@@ -72,6 +72,35 @@ const loginSchema = () => {
   });
 };
 
+const usernameSchema = () => {
+  return checkSchema({
+    username: {
+      isString: {
+        errorMessage: "must be string",
+      },
+      isLength: {
+        options: {min: 5, max: 13},
+        errorMessage: "username must be at least 5 chars and max 13 chars",
+      },
+      custom: {
+        options: (value) => {
+          // Check if the username contains only letters, numbers, dot '.', and underscore '_'
+          if (!/^[a-zA-Z0-9._]+$/.test(value)) {
+            throw new Error("Username can only contain letters, numbers, dot '.' and underscore '_'");
+          }
+          // Check if the username contains at most one dot '.' and one underscore '_'
+          const dotCount = (value.match(/\./g) || []).length;
+          const underscoreCount = (value.match(/_/g) || []).length;
+          if (dotCount > 1 || underscoreCount > 1) {
+            throw new Error("Username can contain at most one dot '.' and one underscore '_'");
+          }
+          return true;
+        },
+      },
+    },
+  });
+};
+
 const biodataSchema = () => {
   return checkSchema({
     firstName: {
@@ -175,6 +204,7 @@ const updateRoomSchema = () => {
 module.exports = {
   registrationSchema,
   loginSchema,
+  usernameSchema,
   biodataSchema,
   newRoomSchema,
   updateRoomSchema,

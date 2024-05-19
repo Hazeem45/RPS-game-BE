@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 class UserController {
   registerUser = async (req, res) => {
-    const {username, email, password} = req.body;
+    // const {username, email, password} = req.body;
 
     try {
       const existedUsername = await userModel.getExistingUsername(username);
@@ -69,6 +69,25 @@ class UserController {
         joinTime: timeFormatting(userDetail.createdAt),
       };
       return res.json(manipulatedData);
+    } catch (error) {
+      return res.status(500).send({message: error.message});
+    }
+  };
+
+  changeUsername = async (req, res) => {
+    const {username} = req.body;
+    const {encryptedId} = req.token;
+    const id = decrypt(encryptedId);
+
+    try {
+      const existedUsername = await userModel.getExistingUsername(username);
+      if (existedUsername) {
+        res.statusCode = 409;
+        return res.json({message: `${username} is already used, try another!`});
+      } else {
+        userModel.updateUsername(id, username);
+        return res.json({message: "success update biodata"});
+      }
     } catch (error) {
       return res.status(500).send({message: error.message});
     }
