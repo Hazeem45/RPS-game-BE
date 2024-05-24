@@ -1,7 +1,5 @@
 const {base64EncodeURLSafe, base64DecodeURLSafe} = require("../utils/base64URLSafeCustom");
 const {decrypt} = require("../utils/encryption");
-const formatDate = require("../utils/formatDate");
-const timeFormatting = require("../utils/formatTime");
 const gameModel = require("./game.model");
 
 class GameController {
@@ -190,8 +188,7 @@ class GameController {
         roomId: base64EncodeURLSafe(data.id),
         roomName: data.roomName,
         result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
-        date: formatDate(data.updatedAt),
-        time: timeFormatting(data.updatedAt),
+        date: data.updatedAt,
       }));
       return res.json(gameHistory);
     } catch (error) {

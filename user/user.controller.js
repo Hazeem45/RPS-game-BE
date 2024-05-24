@@ -1,12 +1,10 @@
 const {encrypt, decrypt} = require("../utils/encryption");
-const formatDate = require("../utils/formatDate");
-const timeFormatting = require("../utils/formatTime");
 const userModel = require("./user.model");
 const jwt = require("jsonwebtoken");
 
 class UserController {
   registerUser = async (req, res) => {
-    // const {username, email, password} = req.body;
+    const {username, email, password} = req.body;
 
     try {
       const existedUsername = await userModel.getExistingUsername(username);
@@ -65,8 +63,7 @@ class UserController {
         id: userDetail.id,
         username: userDetail.username,
         email: userDetail.email,
-        joinDate: formatDate(userDetail.createdAt),
-        joinTime: timeFormatting(userDetail.createdAt),
+        joinAt: userDetail.createdAt,
       };
       return res.json(manipulatedData);
     } catch (error) {
@@ -93,7 +90,7 @@ class UserController {
         }
       } else {
         userModel.updateUsername(id, username);
-        return res.json({message: "success update biodata"});
+        return res.json({message: "success update username"});
       }
     } catch (error) {
       return res.status(500).send({message: error.message});
@@ -103,6 +100,13 @@ class UserController {
   getUserBiodata = async (req, res) => {
     const {encryptedId} = req.token;
     const id = decrypt(encryptedId);
+
+    const formatDate = (dateString) => {
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const [day, month, year] = dateString.split("/");
+      const monthIndex = parseInt(month) - 1;
+      return `${day} ${months[monthIndex]} ${year}`;
+    };
 
     try {
       const userBiodata = await userModel.getUserBiodata(id);
@@ -115,8 +119,7 @@ class UserController {
         birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
         gender: userBiodata.gender,
         profilePicture: userBiodata.profilePicture,
-        joinDate: formatDate(userBiodata.User.createdAt),
-        joinTime: timeFormatting(userBiodata.User.createdAt),
+        joinAt: userBiodata.User.createdAt,
       };
       return res.json(manipulatedBio);
     } catch (error) {
