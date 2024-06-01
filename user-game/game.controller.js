@@ -15,9 +15,12 @@ class GameController {
         res.statusCode = 409;
         return res.json({message: `room with name: ${roomName} is active`});
       } else {
-        gameModel.createNewRoom(idPlayer1, roomName, player1Choice.toUpperCase(), roomStatus);
+        const newRoom = await gameModel.createNewRoom(idPlayer1, roomName, player1Choice.toUpperCase(), roomStatus);
         res.statusCode = 201;
-        return res.json({message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`});
+        return res.json({
+          roomId: base64EncodeURLSafe(newRoom.id),
+          message: `${roomName} room successfully created, waiting for player 2 to join and the result will be updated`,
+        });
       }
     } catch (error) {
       return res.status(500).send({message: error.message});

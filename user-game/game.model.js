@@ -3,7 +3,7 @@ const database = require("../db/models");
 
 class GameModel {
   createNewRoom = (idPlayer1, roomName, player1Choice, roomStatus) => {
-    database.Game_Room.create({
+    return database.Game_Room.create({
       roomName,
       idPlayer1,
       player1Choice,
