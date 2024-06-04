@@ -18,8 +18,8 @@
     }
   ],
   "functions": {
-    "user/user.controller.js": {"maxDuration": 60},
-    "user-game/game.controller.js": {"maxDuration": 60},
-    "middleware/*.js": {"maxDuration": 60}
+    "index.js": {
+      "maxDuration": 60
+    }
   }
 }
