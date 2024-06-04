@@ -18,13 +18,7 @@
     }
   ],
   "functions": {
-    "user/*.js": {
-      "maxDuration": 60
-    },
-    "user-game/*.js": {
-      "maxDuration": 60
-    },
-    "middleware/*.js": {
+    "api/controller.js": {
       "maxDuration": 60
     }
   }
