@@ -18,10 +18,10 @@
     }
   ],
   "functions": {
-    "user/8.js": {
+    "user/*.js": {
       "maxDuration": 60
     },
-    "user-game/8.js": {
+    "user-game/*.js": {
       "maxDuration": 60
     },
     "middleware/*.js": {
