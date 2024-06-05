@@ -53,24 +53,6 @@ class UserController {
     }
   };
 
-  getUserDetailByToken = async (req, res) => {
-    const {encryptedId} = req.token;
-    const id = decrypt(encryptedId);
-
-    try {
-      const userDetail = await userModel.getUserById(id);
-      const manipulatedData = {
-        id: userDetail.id,
-        username: userDetail.username,
-        email: userDetail.email,
-        joinAt: userDetail.createdAt,
-      };
-      return res.json(manipulatedData);
-    } catch (error) {
-      return res.status(500).send({message: error.message});
-    }
-  };
-
   changeUsername = async (req, res) => {
     const {username} = req.body;
     const {encryptedId} = req.token;

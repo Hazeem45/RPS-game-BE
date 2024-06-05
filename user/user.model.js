@@ -50,15 +50,6 @@ class UserModel {
     });
   };
 
-  getUserById = (id) => {
-    return database.User.findOne({
-      where: {id},
-      attributes: {
-        exclude: ["password", "updatedAt"],
-      },
-    });
-  };
-
   updateUsername = (id, username) => {
     database.User.update(
       {
