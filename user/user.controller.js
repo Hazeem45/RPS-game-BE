@@ -92,6 +92,12 @@ class UserController {
 
     try {
       const userBiodata = await userModel.getUserBiodata(id);
+      // auto generate new token when user login, before the previous access token expires.
+      const tokenData = {
+        encryptedId: encryptedId,
+        username: userBiodata.User.username,
+      };
+      const token = jwt.sign(tokenData, process.env.SECRET_KEY, {expiresIn: "1d"});
       const manipulatedBio = {
         username: userBiodata.User.username,
         firstName: userBiodata.firstName,
@@ -101,7 +107,9 @@ class UserController {
         birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
         gender: userBiodata.gender,
         profilePicture: userBiodata.profilePicture,
+        email: encrypt(userBiodata.User.email),
         joinAt: userBiodata.User.createdAt,
+        newToken: token,
       };
       return res.json(manipulatedBio);
     } catch (error) {

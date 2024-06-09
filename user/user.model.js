@@ -70,7 +70,7 @@ class UserModel {
       include: [
         {
           model: database.User,
-          attributes: ["username", "createdAt"],
+          attributes: ["username", "email", "createdAt"],
         },
       ],
     });
