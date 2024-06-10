@@ -10,5 +10,6 @@ userRouter.post("/login", loginSchema(), validation, userController.loginExistin
 userRouter.put("/profile", usernameSchema(), validation, authorization, userController.changeUsername);
 userRouter.put("/biodata", biodataSchema(), validation, authorization, userController.updateUserBiodata);
 userRouter.get("/biodata", authorization, userController.getUserBiodata);
+userRouter.get("/search-user", authorization, userController.getExistingUser);
 
 module.exports = userRouter;

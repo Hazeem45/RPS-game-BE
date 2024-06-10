@@ -92,6 +92,26 @@ class UserModel {
       }
     );
   };
+
+  getExistingUserByUsername = (username) => {
+    return database.User.findAll({
+      where: {
+        username: {
+          [Op.like]: `%${username}%`,
+        },
+      },
+      attributes: {
+        exclude: ["id", "email", "password", "createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: database.User_Biodata,
+          attributes: ["profilePicture"],
+        },
+      ],
+      raw: true,
+    });
+  };
 }
 
 module.exports = new UserModel();

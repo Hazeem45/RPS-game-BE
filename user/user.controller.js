@@ -1,3 +1,5 @@
+const gameModel = require("../user-game/game.model");
+const {base64EncodeURLSafe} = require("../utils/base64URLSafeCustom");
 const {encrypt, decrypt} = require("../utils/encryption");
 const userModel = require("./user.model");
 const jwt = require("jsonwebtoken");
@@ -130,6 +132,26 @@ class UserController {
         return res.json({message: "nothing to updated"});
       }
     } catch (error) {
+      return res.status(500).send({message: error.message});
+    }
+  };
+
+  getExistingUser = async (req, res) => {
+    const {username} = req.query;
+    try {
+      const users = await userModel.getExistingUserByUsername(username);
+      if (users.length > 0) {
+        const usersData = users.map((data) => ({
+          username: data.username,
+          profilePicture: data["User_Biodatum.profilePicture"],
+        }));
+        return res.json(usersData);
+      } else {
+        res.statusCode = 404;
+        return res.json({message: `username ${username} not found!`});
+      }
+    } catch (error) {
+      console.log(error.message);
       return res.status(500).send({message: error.message});
     }
   };
