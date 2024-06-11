@@ -112,6 +112,21 @@ class UserModel {
       raw: true,
     });
   };
+
+  getOtherUserDetails = (username) => {
+    return database.User.findOne({
+      where: {username: username},
+      attributes: ["id", "username", "createdAt"],
+      include: [
+        {
+          model: database.User_Biodata,
+          attributes: {
+            exclude: ["id", "userId", "createdAt", "updatedAt"],
+          },
+        },
+      ],
+    });
+  };
 }
 
 module.exports = new UserModel();

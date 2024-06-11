@@ -1,7 +1,7 @@
-const gameModel = require("../user-game/game.model");
 const {base64EncodeURLSafe} = require("../utils/base64URLSafeCustom");
 const {encrypt, decrypt} = require("../utils/encryption");
 const userModel = require("./user.model");
+const gameModel = require("../user-game/game.model");
 const jwt = require("jsonwebtoken");
 
 class UserController {
@@ -151,7 +151,48 @@ class UserController {
         return res.json({message: `username ${username} not found!`});
       }
     } catch (error) {
-      console.log(error.message);
+      return res.status(500).send({message: error.message});
+    }
+  };
+
+  getOtherUserDetailsAlsoTheirGameHistory = async (req, res) => {
+    const {username} = req.params;
+
+    const formatDate = (dateString) => {
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const [day, month, year] = dateString.split("/");
+      const monthIndex = parseInt(month) - 1;
+      return `${day} ${months[monthIndex]} ${year}`;
+    };
+
+    try {
+      const userDetails = await userModel.getOtherUserDetails(username);
+      if (userDetails) {
+        const roomFinished = await gameModel.getDetailFinishedRoom(userDetails.id);
+        const userHistory = roomFinished.map((data) => ({
+          roomId: base64EncodeURLSafe(data.id),
+          roomName: data.roomName,
+          result: userDetails.id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
+          date: data.updatedAt,
+        }));
+        const manipulatedData = {
+          username: userDetails.username,
+          firstName: userDetails.User_Biodatum.firstName,
+          lastName: userDetails.User_Biodatum.lastName,
+          info: userDetails.User_Biodatum.infoBio,
+          address: userDetails.User_Biodatum.address,
+          birthDate: userDetails.User_Biodatum.birthDate ? formatDate(userDetails.User_Biodatum.birthDate) : null,
+          gender: userDetails.User_Biodatum.gender,
+          joinAt: userDetails.createdAt,
+          profilePicture: userDetails.User_Biodatum.profilePicture,
+          history: userHistory.length > 0 ? userHistory : "This user has no game history",
+        };
+        return res.json(manipulatedData);
+      } else {
+        res.statusCode = 404;
+        return res.json({message: `user not found!`});
+      }
+    } catch (error) {
       return res.status(500).send({message: error.message});
     }
   };

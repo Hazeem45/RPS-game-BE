@@ -11,5 +11,6 @@ userRouter.put("/profile", usernameSchema(), validation, authorization, userCont
 userRouter.put("/biodata", biodataSchema(), validation, authorization, userController.updateUserBiodata);
 userRouter.get("/biodata", authorization, userController.getUserBiodata);
 userRouter.get("/search-user", authorization, userController.getExistingUser);
+userRouter.get("/:username", authorization, userController.getOtherUserDetailsAlsoTheirGameHistory);
 
 module.exports = userRouter;
