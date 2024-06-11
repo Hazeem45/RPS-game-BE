@@ -3,6 +3,7 @@ const {encrypt, decrypt} = require("../utils/encryption");
 const userModel = require("./user.model");
 const gameModel = require("../user-game/game.model");
 const jwt = require("jsonwebtoken");
+const formatDate = require("../utils/formatDate");
 
 class UserController {
   registerUser = async (req, res) => {
@@ -85,13 +86,6 @@ class UserController {
     const {encryptedId} = req.token;
     const id = decrypt(encryptedId);
 
-    const formatDate = (dateString) => {
-      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      const [day, month, year] = dateString.split("/");
-      const monthIndex = parseInt(month) - 1;
-      return `${day} ${months[monthIndex]} ${year}`;
-    };
-
     try {
       const userBiodata = await userModel.getUserBiodata(id);
       // auto generate new token when user login, before the previous access token expires.
@@ -157,13 +151,6 @@ class UserController {
 
   getOtherUserDetailsAlsoTheirGameHistory = async (req, res) => {
     const {username} = req.params;
-
-    const formatDate = (dateString) => {
-      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      const [day, month, year] = dateString.split("/");
-      const monthIndex = parseInt(month) - 1;
-      return `${day} ${months[monthIndex]} ${year}`;
-    };
 
     try {
       const userDetails = await userModel.getOtherUserDetails(username);
