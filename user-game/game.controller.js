@@ -203,8 +203,9 @@ class GameController {
   };
 
   generateFilePDF = async(req, res) => {
-    const { encryptedId } = req.token;
-    const id = parseInt(decrypt(encryptedId));
+    // const { encryptedId } = req.token;
+    // const id = parseInt(decrypt(encryptedId));
+    const id = 3;
 
     try {
       const roomFinished = await gameModel.getDetailFinishedRoom(id);
@@ -303,7 +304,7 @@ class GameController {
         });
       });
     } catch (error) {
-      return res.status(500).send({ message: error.message });
+      return res.status(500).send({ error });
     }
   };
 }
