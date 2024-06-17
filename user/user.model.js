@@ -1,20 +1,20 @@
-const md5 = require("md5");
-const database = require("../db/models");
-const {Op} = require("sequelize");
+const md5 = require('md5');
+const database = require('../db/models');
+const { Op } = require('sequelize');
 
 class UserModel {
   getExistingUsername = (username) => {
     return database.User.findOne({
-      where: {username: username.toLowerCase()},
-      attributes: ["id", "username"],
+      where: { username: username.toLowerCase() },
+      attributes: ['id', 'username'],
       raw: true,
     });
   };
 
   getExistingEmail = (email) => {
     return database.User.findOne({
-      where: {email: email.toLowerCase()},
-      attributes: ["email"],
+      where: { email: email.toLowerCase() },
+      attributes: ['email'],
       raw: true,
     });
   };
@@ -45,7 +45,7 @@ class UserModel {
           },
         ],
       },
-      attributes: ["id", "username"],
+      attributes: ['id', 'username'],
       raw: true,
     });
   };
@@ -56,21 +56,21 @@ class UserModel {
         username: username.toLowerCase(),
       },
       {
-        where: {id},
-      }
+        where: { id },
+      },
     );
   };
 
   getUserBiodata = (id) => {
     return database.User_Biodata.findOne({
-      where: {userId: id},
+      where: { userId: id },
       attributes: {
-        exclude: ["id", "userId", "createdAt", "updatedAt"],
+        exclude: ['id', 'userId', 'createdAt', 'updatedAt'],
       },
       include: [
         {
           model: database.User,
-          attributes: ["username", "email", "createdAt"],
+          attributes: ['username', 'email', 'createdAt'],
         },
       ],
     });
@@ -88,8 +88,8 @@ class UserModel {
         gender: userData.gender,
       },
       {
-        where: {userId: id},
-      }
+        where: { userId: id },
+      },
     );
   };
 
@@ -101,12 +101,12 @@ class UserModel {
         },
       },
       attributes: {
-        exclude: ["id", "email", "password", "createdAt", "updatedAt"],
+        exclude: ['id', 'email', 'password', 'createdAt', 'updatedAt'],
       },
       include: [
         {
           model: database.User_Biodata,
-          attributes: ["profilePicture"],
+          attributes: ['profilePicture'],
         },
       ],
       raw: true,
@@ -115,13 +115,13 @@ class UserModel {
 
   getOtherUserDetails = (username) => {
     return database.User.findOne({
-      where: {username: username},
-      attributes: ["id", "username", "createdAt"],
+      where: { username: username },
+      attributes: ['id', 'username', 'createdAt'],
       include: [
         {
           model: database.User_Biodata,
           attributes: {
-            exclude: ["id", "userId", "createdAt", "updatedAt"],
+            exclude: ['id', 'userId', 'createdAt', 'updatedAt'],
           },
         },
       ],
