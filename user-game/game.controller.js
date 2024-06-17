@@ -1,6 +1,9 @@
 const { base64EncodeURLSafe, base64DecodeURLSafe } = require('../utils/base64URLSafeCustom');
 const { decrypt } = require('../utils/encryption');
 const gameModel = require('./game.model');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const userModel = require('../user/user.model');
 
 class GameController {
   createNewGameRoom = async(req, res) => {
@@ -194,6 +197,111 @@ class GameController {
         date: data.updatedAt,
       }));
       return res.json(gameHistory);
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }
+  };
+
+  generateFilePDF = async(req, res) => {
+    const { encryptedId } = req.token;
+    const id = parseInt(decrypt(encryptedId));
+
+    try {
+      const roomFinished = await gameModel.getDetailFinishedRoom(id);
+      const userData = await userModel.getUserBiodata(id);
+
+      const gameHistory = roomFinished.map((data) => ({
+        roomId: data.id,
+        roomName: data.roomName,
+        result: id === data.idPlayer1 ? data.resultPlayer1 : data.resultPlayer2,
+        date: new Date(data.updatedAt).toLocaleDateString(),
+        time: new Date(data.updatedAt).toLocaleTimeString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }));
+
+      // Membuat dokumen PDF baru
+      const doc = new PDFDocument({ margin: 30 });
+      const fileName = `GameHistory_${Date.now()}.pdf`;
+      const stream = fs.createWriteStream(fileName);
+      doc.pipe(stream);
+
+      // Menambahkan latar belakang berwarna
+      doc.rect(0, 0, doc.page.width, doc.page.height).fill('lightgrey');
+    
+      // Judul di atas tabel
+      doc.fontSize(32).font('Helvetica-Bold').fillColor('black');
+      const title = `Game History of ${userData.User.username}`;
+      const titleWidth = doc.widthOfString(title);
+      // const titleHeight = doc.currentLineHeight();
+      doc.text(title, (doc.page.width - titleWidth) / 2, 40);
+
+      // Fungsi untuk menggambar tabel
+      function drawTable(doc, table) {
+        const startX = 50;
+        const startY = 120;
+        const rowHeight = 30;
+        const colWidth = 130;
+        const tableWidth = colWidth * table.headers.length;
+
+        // Header tabel
+        doc.rect(startX, startY, tableWidth, rowHeight).fillAndStroke('rgb(36, 37, 38)', 'black');
+        doc.fontSize(12).font('Helvetica-Bold').fillColor('white');
+        table.headers.forEach((header, i) => {
+          doc.text(header, startX + i * colWidth + 10, startY + 10, { align: 'center', width: colWidth - 20 });
+        });
+
+        // Baris data
+        doc.fontSize(10).font('Helvetica').fillColor('black');
+        table.rows.forEach((row, rowIndex) => {
+          const y = startY + (rowIndex + 1) * rowHeight;
+        
+          // Latar belakang untuk baris data
+          doc.rect(startX, y, tableWidth, rowHeight).fillAndStroke('#f7f7f7', 'black');
+
+          row.forEach((cell, i) => {
+            doc.fillColor('black');
+            if (i === 1) {
+              if (cell.toLowerCase() === 'win') {
+                doc.fillColor('#4caf50').font('Helvetica-Bold');
+              } else if (cell.toLowerCase() === 'lose') {
+                doc.fillColor('#ff0000').font('Helvetica-Bold');
+              } else if (cell.toLowerCase() === 'draw') {
+                doc.fillColor('orange').font('Helvetica-Bold');
+              }
+            }
+            doc.text(cell, startX + i * colWidth + 10, y + 10, { align: 'center', width: colWidth - 20 });
+            doc.fillColor('black').font('Helvetica');
+          });
+
+          // Garis pembatas bawah untuk setiap baris data
+          doc.lineWidth(0.5).moveTo(startX, y + rowHeight).lineTo(startX + tableWidth, y + rowHeight).stroke();
+        });
+      }
+
+      // Membuat tabel
+      const table = {
+        headers: ['Room', 'Result', 'Date', 'Time'],
+        rows: gameHistory.map((game) => [
+          game.roomName,
+          game.result,
+          game.date,
+          `${game.time} ${game.timeZone}`,
+        ]),
+      };
+
+      // Menambahkan tabel ke PDF
+      drawTable(doc, table);
+
+      // Menyelesaikan dokumen dan mengirim file
+      doc.end();
+      stream.on('finish', () => {
+        res.download(fileName, (err) => {
+          if (err) {
+            res.status(500).send({ message: 'Error downloading the file' });
+          }
+          fs.unlinkSync(fileName); // Menghapus file setelah di-download
+        });
+      });
     } catch (error) {
       return res.status(500).send({ message: error.message });
     }

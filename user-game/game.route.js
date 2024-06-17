@@ -12,5 +12,6 @@ gameRouter.get('/finished-rooms', authorization, gameController.getFinishedRoom)
 gameRouter.get('/room/:encodedId', authorization, gameController.getGameRoomDetails);
 gameRouter.put('/room/:encodedId', updateRoomSchema(), validation, authorization, gameController.updateGameRoom);
 gameRouter.get('/history', authorization, gameController.getGameHistory);
+gameRouter.get('/generate-pdf', authorization, gameController.generateFilePDF);
 
 module.exports = gameRouter;
