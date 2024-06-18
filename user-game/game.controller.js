@@ -222,7 +222,7 @@ class GameController {
 
       // Membuat dokumen PDF baru
       const doc = new PDFDocument({ margin: 30 });
-      const fileName = `GameHistory_${Date.now()}.pdf`;
+      const fileName = `/tmp/GameHistory_${userData.User.username}_${Date.now()}.pdf`;
       const stream = fs.createWriteStream(fileName);
       doc.pipe(stream);
 
@@ -304,7 +304,7 @@ class GameController {
         });
       });
     } catch (error) {
-      return res.status(500).send({ error });
+      return res.status(500).send({ message: error.message });
     }
   };
 }
