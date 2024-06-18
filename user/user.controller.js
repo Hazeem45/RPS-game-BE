@@ -3,7 +3,7 @@ const { encrypt, decrypt } = require('../utils/encryption');
 const userModel = require('./user.model');
 const gameModel = require('../user-game/game.model');
 const jwt = require('jsonwebtoken');
-const formatDate = require('../utils/formatDate');
+const { splitFormatDate } = require('../utils/formatDate');
 
 class UserController {
   registerUser = async(req, res) => {
@@ -100,7 +100,7 @@ class UserController {
         lastName: userBiodata.lastName,
         info: userBiodata.infoBio,
         address: userBiodata.address,
-        birthDate: userBiodata.birthDate ? formatDate(userBiodata.birthDate) : null,
+        birthDate: userBiodata.birthDate ? splitFormatDate(userBiodata.birthDate) : null,
         gender: userBiodata.gender,
         profilePicture: userBiodata.profilePicture,
         email: encrypt(userBiodata.User.email),
@@ -168,7 +168,7 @@ class UserController {
           lastName: userDetails.User_Biodatum.lastName,
           info: userDetails.User_Biodatum.infoBio,
           address: userDetails.User_Biodatum.address,
-          birthDate: userDetails.User_Biodatum.birthDate ? formatDate(userDetails.User_Biodatum.birthDate) : null,
+          birthDate: userDetails.User_Biodatum.birthDate ? splitFormatDate(userDetails.User_Biodatum.birthDate) : null,
           gender: userDetails.User_Biodatum.gender,
           joinAt: userDetails.createdAt,
           profilePicture: userDetails.User_Biodatum.profilePicture,
